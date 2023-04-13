@@ -13,9 +13,8 @@ author:
   url: "<https://www.faac.unesp.br/#!/pos-graduacao/>"
 date: "15 mar. 2023"
 output:
-  pdf_document: 
+  pdf_document:
     latex_engine: xelatex
-    keep_tex: yes
   word_document: default
   html_document:
     df_print: paged
@@ -58,8 +57,7 @@ if (get_os() == "windows"){
   knitr::opts_knit$set(root.dir = "D:/GitHub/artigo-covid-ensino-superior/") # Deve ser modificado de acordo com o diretório de trabalho no computador 
 }
 if (get_os() == "osx"){
-     knitr::opts_knit$set(root.dir = "/Users/jpalbino/Library/Mobile Documents/com~apple~CloudDocs/GitHub/with-a-little-help-from-my-friends/artigo-final")
-     knitr::opts_knit$set(fig_path = ".png", list(fig.path = "/Users/jpalbino/Library/Mobile Documents/com~apple~CloudDocs/GitHub/with-a-little-help-from-my-friends/artigo-final/figura-", label = "aed"), 1:2)
+     knitr::opts_knit$set(root.dir = "/Volumes/Extension/GitHub/artigo-covid-ensino-superior") # Deve ser modificado de acordo com o diretório de trabalho no computador 
 }
 
 knitr::opts_chunk$set(echo = TRUE) # Opções de compilação inicial: Mostrar código fonte no texto
@@ -74,7 +72,9 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE) # Opções de compilaç�
 
 # Lendo o arquivo em .csv
 # Deve ser modificado de acordo com o diretório de trabalho no computador
-dbf.csv <-read.csv("D:/GitHub/artigo-covid-ensino-superior/dados/COVID19IES.csv", header = TRUE, sep = ";", quote = "\"", dec = ".") 
+if (get_os() == "windows")
+  dbf.csv <-read.csv("D:/GitHub/artigo-covid-ensino-superior/dados/COVID19IES.csv", header = TRUE, sep = ";", quote = "\"", dec = ".")
+if (get_os() == "osx") dbf.csv <-read.csv("/Volumes/Extension/GitHub/artigo-covid-ensino-superior/dados/COVID19IES.csv", header = TRUE, sep = ";", quote = "\"", dec = ".")
 ```
 
 ```{r, sumario, echo=FALSE}
@@ -1068,5 +1068,3 @@ VEJA. As lições da pandemia de Covid-19 – que está chegando ao fim. 2021 . 
 https://veja.abril.com.br/saude/os-sinais-de-que-a-pandemia-de-covid-19-vai-acabar-em-breve/.  
 
 World Health Organization. (2020). Pandemic influenza preparedness and response: A WHO guidance document. Disponível em: https://www.who.int/csr/disease/influenza/pipguidance2009/en/. Acesso em 13 mar. 2023.  
-
-

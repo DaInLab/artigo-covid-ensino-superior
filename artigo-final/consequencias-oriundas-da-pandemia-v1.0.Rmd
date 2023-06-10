@@ -11,13 +11,13 @@ author:
   affiliation: "Universidade Estadual Paulista Júlio de Mesquita Filho - UNESP/Bauru"
   e-mail: jp.albino@unesp.br
   url: "<https://www.faac.unesp.br/#!/pos-graduacao/>"
-date: "15 mar. 2023"
+date: "1 jun. 2023"
 output:
-  pdf_document:
-    latex_engine: xelatex
-  word_document: default
   html_document:
     df_print: paged
+  word_document: default
+  pdf_document:
+    latex_engine: xelatex
 abstract: "Em março de 2020, a Organização Mundial de Saúde (ONU) declarou oficialmente
   como pandemia a Covid-19. No Brasil, foi confirmado o primeiro caso do vírus em
   fevereiro de 2020, tendo posteriormente o número de contaminados e de óbitos se
@@ -68,20 +68,16 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE) # Opções de compilaç�
 # - ETAPA INICIAL
 #--- Importação e preparação dos dados
 # versão inicial em 05/01/2023.
+# dados do dataset atualizados em 30/05/2023.
 # versão do projeto "Consequências Oriundas da Pandemia da Covid-19 nos Estudantes Universitários Brasileiros" no GitHub
 
-# Lendo o arquivo em .csv
-# Deve ser modificado de acordo com o diretório de trabalho no computador
-if (get_os() == "windows")
-  dbf.csv <-read.csv("D:/GitHub/artigo-covid-ensino-superior/dados/COVID19IES.csv", header = TRUE, sep = ";", quote = "\"", dec = ".")
-if (get_os() == "osx") dbf.csv <-read.csv("/Volumes/Extension/GitHub/artigo-covid-ensino-superior/dados/COVID19IES.csv", header = TRUE, sep = ";", quote = "\"", dec = ".")
-```
+# Lendo o arquivo em .xlsx
+if (!("readxl") %in% installed.packages()) install.packages("readxl")
+library(readxl)
 
-```{r, sumario, echo=FALSE}
-# Sumário do data set
-#summary(dbf.csv)
-# número total de observações no data frame
-total_casos <- nrow(dbf.csv)
+# Deve ser modificado de acordo com o diretório de trabalho no computador
+if (get_os() == "windows") dbf.xlsx <- read_excel("D:/GitHub/artigo-covid-ensino-superior/dados/COVID-19-E-IES-2023.xlsx")
+if (get_os() == "osx") dbf.xlsx <- read_excel("/Volumes/Extension/GitHub/artigo-covid-ensino-superior/dados/COVID-19-E-IES-2023.xlsx")
 ```
 
 ## Introdução
@@ -121,13 +117,30 @@ Na intenção de identificar as principais dificuldades pelas instituições de 
 Do ponto de vista da ciência de dados, o objetivo foi o de extrair conhecimento e insights a partir dos dados disponíveis sobre a COVID-19 na população universitária brasileira. Através da análise exploratória desses dados (AED), foi possível identificar padrões e tendências relacionadas à disseminação da doença entre os estudantes da amostra obtida, bem como explorar as possíveis consequências dessa disseminação, como o impacto no ensino e nas atividades acadêmicas.  
 Além disso, a ciência de dados pode ser usada para desenvolver modelos preditivos que possam ajudar a prever a propagação da COVID-19 nas universidades brasileiras e fornecer informações valiosas para apoiar as decisões tomadas pelos gestores das universidades, políticos e profissionais de saúde.  
 É importante ressaltar que a análise de dados em relação à COVID-19 na população universitária foi realizada com todo o cuidado e atenção, levando em consideração questões éticas e de privacidade dos indivíduos envolvidos, sendo a pesquisa aprovada pelo conselho de ética da UNESP e registrada na Plataforma Brasil sob o CAAE: 47289921.9.0000.5663.  
-Este artigo apresenta o relatório da análise exploratória de dados sobre como a pandemia de Coronavírus (Covid-19) afetou a vida e cotidiano dos estudantes universitários. O questionário ficou disponível de abril de 2021 a dezembro de 2022, contendo 50 questões.   
-COmo pode ser observado na figura do Gráfico 1, a pesquisa contou com a participação de 52 integrantes, sendo que 48% se declaram do gênero masculino, 46% feminino, 4% transgênero/transexual e 2% homem gay. A amostra foi composta ainda por 77% de alunos da UNESP e 23% de demais instituições. 
+Este artigo apresenta o relatório da análise exploratória de dados sobre como a pandemia de Coronavírus (Covid-19) afetou a vida e cotidiano dos estudantes universitários. O questionário ficou disponível de abril de 2021 a dezembro de 2022, contendo 50 questões. 
+
+
+```{r, sumario, echo=FALSE}
+# Sumário do data set
+# número total de observações no data frame
+total_casos <- nrow(dbf.xlsx)
+
+#Quantidade de respondentes por sexo
+casos_genero <- table(dbf.xlsx$genero)
+pct_genero <- paste(round(unname(casos_genero) / sum(unname(casos_genero)) * 100), "%")
+
+# Quantidade de respondentes por Instituição de Ensino Superior
+casos_ies <- table(dbf.xlsx$ies, exclude = NULL)
+pct_ies <- round(unname(casos_ies) / sum(unname(casos_ies)) * 100)
+sem_unesp_ies = 100 - pct_ies[11]
+sem_unesp_ies = paste(sem_unesp_ies, "%")
+pct_ies <- paste0(pct_ies, "%")
+```
+
+Como pode ser observado na figura do Gráfico 1, a pesquisa contou com a participação de `r total_casos` integrantes, sendo que `r pct_genero[3]` se declaram do gênero masculino, `r pct_genero[1]` feminino e `r pct_genero[2]` LGBT. A amostra foi composta ainda por `r pct_ies[11]` de alunos da UNESP e `r sem_unesp_ies` de demais instituições. 
 
 ```{r, grafico-1, echo=FALSE}
-# Dados do Gráfico 2
-casos_genero <- table(dbf.csv$genero)
-pct_genero <- paste(round(unname(casos_genero) / sum(unname(casos_genero)) * 100), "%")
+# Dados do Gráfico 1
 
 #Gráfico 1: Quantidade de respondentes por sexo
 # Gráfico tipo "pizza"
@@ -141,14 +154,11 @@ pie(casos_genero,
 ```
 
 ## Análise Exploratória de Dados
-A Análise Exploratória de Dados (AED), de acordo com James et al. (2013), é uma abordagem de análise de dados que se concentra em compreender e resumir as principais características dos dados por meio de técnicas estatísticas e gráficas. O principal objetivo da AED é descobrir padrões, tendências, anomalias e relações entre as variáveis em um conjunto de dados, com o objetivo de gerar hipóteses e insights para análises mais aprofundadas, afirmam os autores.  
-De acordo com Tukey (1977), o processo de AED envolve a "coleta de dados, organização, sumarização, análise exploratória, modelagem e comunicação dos resultados". A AED pode ser realizada tanto em conjuntos de dados pequenos quanto grandes e complexos, e pode ser aplicada em diversas áreas, como ciências sociais, biologia, economia, engenharia, entre outras.  
+A Análise Exploratória de Dados (AED), de acordo com James et al. (2013), é uma abordagem de análise de dados que se concentra em compreender e resumir as principais características dos dados por meio de técnicas estatísticas e gráficas. O principal objetivo da AED é descobrir padrões, tendências, anomalias e relações entre as variáveis em um conjunto de dados, com o objetivo de gerar hipóteses e **insights** para análises mais aprofundadas, afirmam os autores.  
+De acordo com Tukey (1977), o processo de AED envolve a "coleta de dados, organização, sumarização, análise exploratória, modelagem e comunicação dos resultados". A AED pode ser realizada tanto em conjuntos de dados pequenos quanto grandes e complexos, e pode ser aplicada em diversas áreas, como ciências sociais, biologia, economia, engenharia, dentre outras.  
 
-## Perfil dos entrevistados
-Para o perfil dos entrevistados foram analisadas as respostas obtidas pelo questionário, no período disponível. A faixa etária com maior número de entrevistados, correspondendo a 35%, é a faixa etária de 17 a 24 anos.  As faixas de 22 a 26 anos e 37 a 41 anos obtiveram 13% cada uma, 10% dos respondentes estão na faixa de 42 a 46 anos, de 47 a 51 anos e de 52 a 56 anos tiveram ambas 8%, 6% eram da faixa de 27 a 31 anos, 6% de 32 a 36 anos, e apenas 2% se enquadraram na faixa etária de 57 a 61 anos, como é possível observar no Gráfico 2. 
-
-```{r, grafico-2, echo=FALSE}
-## Gráfico 2 Faixa Etária dos respondentes
+```{r, grafico-2-pre-calc, echo=FALSE}
+## Calculando valores para o Gráfico 2 - Faixa Etária dos respondentes
 
 # Versão 2, utilizando a definição divisão das faixas etárias:
 # 17 - 21
@@ -161,23 +171,56 @@ Para o perfil dos entrevistados foram analisadas as respostas obtidas pelo quest
 # 52 - 56
 # 57 - 61
 
-idade_concat <- data.frame(idade=dbf.csv$idade, faixa_etaria="")
-
+idade_concat <- data.frame(idade=dbf.xlsx$idade, faixa_etaria="")
 for (k in 1:nrow(idade_concat)) {
-  if(idade_concat$idade[k] <= 21) idade_concat$faixa_etaria[k] <- "17-21"
-  if(idade_concat$idade[k] >= 22 & idade_concat$idade[k] <= 26) idade_concat$faixa_etaria[k] <- "22-26"
-  if(idade_concat$idade[k] >= 27 & idade_concat$idade[k] <= 31) idade_concat$faixa_etaria[k] <- "27-31"
-  if(idade_concat$idade[k] >= 32 & idade_concat$idade[k] <= 36) idade_concat$faixa_etaria[k] <- "32-36"
-  if(idade_concat$idade[k] >= 37 & idade_concat$idade[k] <= 41) idade_concat$faixa_etaria[k] <- "37-41"
-  if(idade_concat$idade[k] >= 42 & idade_concat$idade[k] <= 46) idade_concat$faixa_etaria[k] <- "42-46" 
-  if(idade_concat$idade[k] >= 47 & idade_concat$idade[k] <= 51) idade_concat$faixa_etaria[k] <- "47-51" 
-  if(idade_concat$idade[k] >= 52 & idade_concat$idade[k] <= 56) idade_concat$faixa_etaria[k] <- "52-56"
-  if(idade_concat$idade[k] >= 57 & idade_concat$idade[k] <= 61) idade_concat$faixa_etaria[k] <- "57-61"
-  if(idade_concat$idade[k] > 61) idade_concat$faixa_etaria[k] <- "61+"
+  if(is.na(idade_concat$idade[k])) {idade_concat$faixa_etaria[k] <- "ND" 
+  } else if(idade_concat$idade[k] <= 21) {idade_concat$faixa_etaria[k] <- "de 17 a 21 anos"
+  } else if(idade_concat$idade[k] >= 22 & idade_concat$idade[k] <= 26) {idade_concat$faixa_etaria[k] <- "de 22 a 26 anos"
+  } else if(idade_concat$idade[k] >= 27 & idade_concat$idade[k] <= 31) {idade_concat$faixa_etaria[k] <- "de 27 a 31 anos"
+  } else if(idade_concat$idade[k] >= 32 & idade_concat$idade[k] <= 36) {idade_concat$faixa_etaria[k] <- "de 32 a 36 anos"
+  } else if(idade_concat$idade[k] >= 37 & idade_concat$idade[k] <= 41) {idade_concat$faixa_etaria[k] <- "de 37 a 41 anos"
+  } else if(idade_concat$idade[k] >= 42 & idade_concat$idade[k] <= 46) {idade_concat$faixa_etaria[k] <- "de 42 a 46 anos" 
+  } else if(idade_concat$idade[k] >= 47 & idade_concat$idade[k] <= 51) {idade_concat$faixa_etaria[k] <- "de 47 a 51 anos" 
+  } else if(idade_concat$idade[k] >= 52 & idade_concat$idade[k] <= 56) {idade_concat$faixa_etaria[k] <- "de 52 a 56 anos"
+  } else if(idade_concat$idade[k] >= 57 & idade_concat$idade[k] <= 61) {idade_concat$faixa_etaria[k] <- "de 57 a 61 anos" 
+  } else if(idade_concat$idade[k] > 61) {idade_concat$faixa_etaria[k] <- "acima de 61 anos"
+  }
 }
+
 casos_idade_concat <- table(idade_concat$faixa_etaria)
 #Cálculo da porcentagem das faixas etárias
 pct_idade3 <- paste0(round(unname(casos_idade_concat) / sum(unname(casos_idade_concat)) * 100,0), "%")
+
+# Maior número de casos
+#max(casos_idade_concat)
+# Qual a posição, dentro da array, do maior número de casos
+#which.max(casos_idade_concat)
+# A string com a maior quantidade de casos
+#names(which.max(casos_idade_concat))
+# A porcentagem da maior quantidade de casos de idade
+#unname(which.max(casos_idade_concat))
+#pct_idade3[unname(which.max(casos_idade_concat))]
+
+# E o segundo caso com maior número de casos?
+#max(casos_idade_concat[casos_idade_concat!=max(casos_idade_concat)])
+#names(which.max(casos_idade_concat[casos_idade_concat!=max(casos_idade_concat)]))
+
+# Encontrando as outras faixas etárias representativas abordagem
+#Cálculo da porcentagem das faixas etárias
+pct_idade4 <- paste0(round(unname(sort(casos_idade_concat)) / sum(unname(sort(casos_idade_concat))) * 100,0), "%")
+n <- length(casos_idade_concat)
+#sort(casos_idade_concat,partial=n-2)[n-2] # terceiro maior
+#names(sort(casos_idade_concat,partial=n-2)[n-2]) # quantidade do terceiro maior
+#pct_idade4[n-2] # posição na array de percentual do terceiro maior
+```
+
+## Perfil dos entrevistados
+Para o perfil dos entrevistados foram analisadas as respostas obtidas pelo questionário, no período disponível. A faixa etária com maior número de entrevistados, correspondendo a `r pct_idade3[unname(which.max(casos_idade_concat))]`, é a faixa etária `r names(which.max(casos_idade_concat))`. A segunda faixa etária com maior número de respondentes nesta amostra é a faixa etária correspondente a `r names(which.max(casos_idade_concat[casos_idade_concat!=max(casos_idade_concat)]))` com `r pct_idade3[unname(which.max(casos_idade_concat[casos_idade_concat!=max(casos_idade_concat)]))]`.  
+A faixa de `r names(sort(casos_idade_concat,partial=n-2)[n-2])` obteve `r pct_idade4[n-2]`, a faixa de `r names(sort(casos_idade_concat,partial=n-3)[n-3])` obteve `r pct_idade4[n-3]`e a faixa de `r `names(sort(casos_idade_concat,partial=n-4)[n-4])` obteve `r pct_idade4[n-4]`, como é possível observar na figura do Gráfico 2.  
+
+```{r, grafico-2, echo=FALSE}
+## Gráfico 2 Faixa Etária dos respondentes
+
 # Gráfico do tipo barra das faixas etárias
 graph.idade_concat <- barplot(casos_idade_concat, 
                                main = "Gráfico 2: Faixa etária dos respondentes",
@@ -188,121 +231,150 @@ graph.idade_concat <- barplot(casos_idade_concat,
                                ylim = c(0,max(casos_idade_concat) + 5))
 text(x = graph.idade_concat, y = casos_idade_concat, label = unname(casos_idade_concat), cex=1, pos=3)
 axis(1, at=graph.idade_concat, labels=paste0("(", pct_idade3, ")"), tick=F, las=1, line=-1.0, cex.axis= 1.1)
+```
 
+```{r, grafico-3-pre-calc, echo=FALSE}
+# Dados para o Gráfico 3
+casos_conjugal <- table(dbf.xlsx$situacao_conjugal)
+pct_conjugal <- paste(round(unname(sort(casos_conjugal)) / sum(unname(sort(casos_conjugal))) * 100), "%")
+n <- length(casos_conjugal)
 
 ```
 
-Quanto ao estado civil dos participantes 54% são solteiros(as), 31% casados(as), 10% estão em uma união estável, 4% divorciados(as) e 1% viúvos(as). Tais dados estão representados no Gráfico 3 
+Quanto a situação civil dos participantes, são `r paste0(tolower(names(sort(casos_conjugal,partial=n-0)[n-0])), "s")`, `r pct_conjugal[n-0]`,  são `r paste0(tolower(names(sort(casos_conjugal,partial=n-1)[n-1])), "s")`, `r pct_conjugal[n-1]`, `r pct_conjugal[n-2]` estão em `r tolower(names(sort(casos_conjugal,partial=n-2)[n-2]))`, `r pct_conjugal[n-3]` são `r paste0(tolower(names(sort(casos_conjugal,partial=n-3)[n-3])), "s")` e `r pct_conjugal[n-4]` é `r tolower(names(sort(casos_conjugal,partial=n-4)[n-4]))`.  
+Tais dados estão representados no Gráfico 3. 
 
 ```{r, grafico-3, echo=FALSE}
-# Dados do Gráfico 3
-casos_conjugal <- table(dbf.csv$situacao_conjugal)
-pct_conjugal <- paste(round(unname(casos_conjugal) / sum(unname(casos_conjugal)) * 100), "%")
-
 #Gráfico 3: Quantidade de respondentes por sutuação conjugal
 # Gráfico tipo "pizza"
-pie(casos_conjugal,
+pie(sort(casos_conjugal),
     edges = 200, radius = 0.8,
     clockwise = F,
-    density = NULL, angle = 90, col = c("red", "orange", "yellow", "green", "black"),
-    labels = paste(names(casos_conjugal), "-", pct_conjugal),
-    main = "Gráfico 3: Quantidade de respondentes por sitação conjugal")
+    density = NULL, angle = 90, col = c("black", "orange", "yellow", "green", "red"),
+    labels = paste(names(sort(casos_conjugal)), "-", pct_conjugal),
+    main = "Gráfico 3: Quantidade de respondentes por estado civil")
 ```
 
-Ainda caracterizando o perfil dos entrevistados, na figura do Gráfico 4 foi apontado que o nível de escolaridade predominante da amostra é a graduação, com 21 respondentes (40%), seguido pelo doutorado com 15 (29%) e mestrado com 13 respondentes.  
+```{r, grafico-4-pre-calc, echo=FALSE}
+# Dados do Gráfico 4 Quantidade de respondentes por nível de ensino
+casos_ensino<- table(dbf.xlsx$nivel_ensino, exclude = NULL)
+pct_ensino <- paste(round(unname(sort(casos_ensino)) / sum(unname(sort(casos_ensino))) * 100), "%")
+# Determinando o maior número de casos de nível de ensino
+n <- length(casos_ensino)
+```
+
+Ainda caracterizando o perfil dos entrevistados, na figura do Gráfico 4 foi constatado que o nível de escolaridade predominante da amostra é a `r names(sort(sort(casos_ensino,partial=n-0)[n-0]))`, com `r unname(sort(sort(casos_ensino,partial=n-0)[n-0]))` respondentes (`r pct_ensino[n-0]`), seguido pelo `r names(sort(sort(casos_ensino,partial=n-1)[n-1]))` com `r unname(sort(sort(casos_ensino,partial=n-1)[n-1]))` casos (`r pct_ensino[n-1]`) e `r names(sort(sort(casos_ensino,partial=n-2)[n-2]))` com `r unname(sort(sort(casos_ensino,partial=n-2)[n-2]))` respondentes (`r pct_ensino[n-2]`).  
 
 ```{r, grafico-4, echo=FALSE}
-# Dados do Gráfico 4
-casos_ensino<- table(dbf.csv$nivel_ensino, exclude = NULL)
-pct_ensino <- paste(round(unname(casos_ensino) / sum(unname(casos_ensino)) * 100), "%")
-#Gráfico 7: Quantidade de respondentes por nível de ensino
+# Gráfico 4: Quantidade de respondentes por nível de ensino
 # Gráfico tipo "pizza"
-pie(casos_ensino,
+pie(sort(casos_ensino)[(n-2):n],
     edges = 200, radius = 0.8,
-    clockwise = T,
+    clockwise = F,
     density = NULL, angle = 90, col = c("red", "orange", "yellow", "green", "black", "white"),
-    labels = paste(names(casos_ensino), "-", pct_ensino),
+    labels = paste(names(sort(casos_ensino)[(n-2):n]), "-", pct_ensino[(n-2):n]),
     main = "Gráfico 4: Quantidade de respondentes por nível de ensino")
 ```
 
-Observa-se no Gráfico 4 que os níveis de Pós-doutorado, MBA/Especialização e ensino técnico constam 1 entrevistado cada (2%). 
-Do total de respondentes da pesquisa, a grande maioria (86%) são de instituição pública, 12% de instituições privadas, e 2% de autarquia municipal (Gráfico 5). 
+Os demais níveis de formação, tais como `r names(sort(casos_ensino,partial=n-3)[n-3])`, `r names(sort(casos_ensino,partial=n-4)[n-4])` e `r names(sort(casos_ensino,partial=n-5)[n-5])` constam com `r unname(sort(casos_ensino,partial=n-5)[n-5])` entrevistado cada nível, ou apenas  `r pct_ensino[n-5]` da amostra. 
+
+```{r, grafico-5-pre-calc, echo=FALSE}
+# Dados do Gráfico 5: Quantidade de respondentes por tipo de mantenedora de instituição de ensino
+casos_tipo_ies<- table(dbf.xlsx$tipo_ies, exclude = NULL)
+pct_tipo_ies <- paste(round(unname(sort(casos_tipo_ies)) / sum(unname(sort(casos_tipo_ies))) * 100), "%")
+n <- length(casos_tipo_ies)
+```
+
+Do total de respondentes da pesquisa, a grande maioria (`r pct_tipo_ies[n-0]`) são de instituição `r names(sort(sort(casos_tipo_ies,partial=n-0)[n-0]))`, `r pct_tipo_ies[n-1]` de `r names(sort(sort(casos_tipo_ies,partial=n-1)[n-1]))` (Gráfico 5). 
 
 ```{r, grafico-5, echo=FALSE}
-# Dados do Gráfico 5
-casos_tipo_ies<- table(dbf.csv$tipo_ies, exclude = NULL)
-names(casos_tipo_ies) = c("Municipal", "Privada", "Pública")
-pct_tipo_ies <- paste(round(unname(casos_tipo_ies) / sum(unname(casos_tipo_ies)) * 100), "%")
 #Gráfico 5: Quantidade de respondentes por tipo de mantenedora de instituição de ensino
 # Gráfico tipo "pizza"
-pie(casos_tipo_ies,
+pie(sort(casos_tipo_ies),
     edges = 200, radius = 0.8,
     clockwise = T,
     density = NULL, angle = 90, col = c("red", "orange", "blue"),
-    labels = paste(names(casos_tipo_ies), "-", pct_tipo_ies),
+    labels = paste(names(sort(casos_tipo_ies)), "-", pct_tipo_ies),
     main = "Gráfico 5: Respondentes por tipo de mantenedora")
 ```
 
-Ao analisar as condições financeiras dos participantes por meio do Gráfico 6, foi possível identificar que, do total de participantes da amostra, 56% estavam empregados, em diversos segmentos, 23% eram bolsistas ou estagiários, 13% eram dependentes e contavam com ajuda dos pais, 2% aposentados e 4% estavam desempregados.  
-
-```{r, grafico-6, echo=FALSE}
-# Dados do Gráfico 6
-casos_emprego <- table(dbf.csv$situacao_empregaticia)
+```{r, grafico-6-pre-calc, echo=FALSE}
+# Dados do Gráfico 6 do tipo barra sitação empregatícia
+casos_emprego <- table(dbf.xlsx$situacao_empregaticia)
 # Rótulos muito grandes  em grande quantidade. Dificuldade para exibir nos gráficos
 # Redução proposital dos textos
-names(casos_emprego) <- c("Aposentada", "Bolsista","Corretor", "Dep./Empr.", "Dependente",
-                          "Desemp.","Empregado","Empresária","Estagiário","Micro-emp.",
-                          "Serv. púb.", "Autôn/Dep.")
-pct_emprego <- paste(round(unname(casos_emprego) / sum(unname(casos_emprego)) * 100), "%")
+names(casos_emprego) <- c("Aposentado","Autônomo", "Bolsista", "Desempregado","Empregado", 
+                          "Estagiário","Serv. público", "ND")
+pct_emprego <- paste(round(unname(sort(casos_emprego)) / sum(unname(sort(casos_emprego))) * 100), "%")
+n <- length(casos_emprego)
+```
+
+Ao analisar as condições financeiras dos participantes por meio do Gráfico 6, foi possível identificar que, do total de participantes da amostra, `r pct_emprego[n-0])` são `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-0)[n-0]))), "s")`, `r pct_emprego[n-1])` estão `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-1)[n-1]))), "s")`, `r pct_emprego[n-2])` são `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-2)[n-2]))), "s")` e `r pct_emprego[n-3])` são `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-3)[n-3]))), "s")`.
+
+```{r, grafico-6, echo=FALSE}
 # Gráfico 6 do tipo barra sitação empregatícia
-graph.casos_emprego <- barplot(casos_emprego, 
-                              main = "Gráfico 6: Quantidade de respondentes por situação empregatícia",
+graph.casos_emprego <- barplot(sort(casos_emprego), 
+                              main = "Gráfico 6: Quantidade de respondentes por sitação empregatícia",
                               xlab = "Sitação Empregatícia", 
                               ylab = "Respondentes",
                               col = "orange",
-                              ylim = c(0,max(casos_emprego) + 5))
-text(x = graph.casos_emprego, y = casos_emprego, label = unname(casos_emprego), cex=1, pos=3)
+                              ylim = c(0,max(sort(casos_emprego)) + 100))
+text(x = graph.casos_emprego, y = sort(casos_emprego), label = unname(sort(casos_emprego)), cex=1, pos=3)
 axis(1, at=graph.casos_emprego, labels=paste("(", pct_emprego, ")"), tick=F, las=1, line=-1.0, cex.axis= 1.1)
 ```
 
-Com relação questão da vacinação, nesta amostra todos os participantes foram vacinados contra a Covid-19, como é possível observar no Gráfico 8. 
+Ainda com relação ao vículo empregatício da amostra, pode-se também pobservar na figura do Gráfico 6 que `r pct_emprego[n-4])` estão `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-4)[n-4]))), "s")`, `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-5)[n-5]))), "s")` representam `r pct_emprego[n-5])` dos casos e `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-6)[n-6]))), "s")` e  `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-7)[n-7]))), "s")` são apenas `r pct_emprego[n-7])` dos respondentes.
 
-```{r, grafico-8, echo=FALSE}
-# Dados do Gráfico 8
-casos_vacinado <- table(dbf.csv$vacinado, exclude = NULL)
+```{r, grafico-7-prep-calc, echo=FALSE}
+# Dados do Gráfico 7: Foi vacinado?
+casos_vacinado <- table(dbf.xlsx$vacinado, exclude = NULL)
 names(casos_vacinado) <- c("Duas doses ou dose única", 
-                               "Duas doses ou dose única e reforço", 
-                               "Duas doses ou dose única e doses de reforço",
-                               "N/A ou Não quero responder")
+                           "Duas doses ou dose única e reforço",
+                           "Com a 1a. dose",
+                           "N/A ou Não quero responder")
 pct_vacinado <- paste(round(unname(casos_vacinado) / 
                                   sum(unname(casos_vacinado)) * 100), "%")
-#Gráfico 8: Está vacinado
+total_vacina = round(sum(unname(casos_vacinado[1:2]))/sum(unname(casos_vacinado)) * 100, 1)
+
+```
+
+Com relação questão da vacinação contra a COVID-19, nesta amostra, a maioria dos estudantes (`r paste0(total_vacina, "%")`foi vacinada, como é possível observar no Gráfico 7, somando-se os dados dos que foram imunizados com duas doses ou dose única e os com duas doses ou dose única e reforço (Gráfico 7).  
+
+```{r, grafico-7, echo=FALSE}
+# Dados do Gráfico 7: Foi vacinado?
 # Gráfico tipo "pizza"
 pie(casos_vacinado,
     edges = 200, radius = 0.8,
     clockwise = F,
     density = NULL, angle = 90, col = c("gray",  "red", "blue","orange", "black", "white", "green"),
     labels = paste(names(casos_vacinado), "-", pct_vacinado),
-    main = "Gráfico 8: Vacinação contra Covid-19")
+    main = "Gráfico 7: Vacinados contra Covid-19")
 ```
 
-Em sua maioria, foram tomadas as duas doses, ou dose única além das doses de reforço. 
-Outro fator importante a ser levado em consideração devido a pandemia é a questão de locomoção - impedidas pelas restrições e *lockdown* - e o fato de que a maior parte dos respondentes não eram residentes da cidade em que estudavam, pois apenas 18 (35%) dos entrevistados eram residentes na mesma cidade da universidade e/ou faculdade e a maioria, 34 (65%) de outras cidades. Destes, 90% estavam na sua residência permanente durante a pandemia e 10% não (Gráfico 9).  
+```{r, grafico-9-prep-calc, echo=FALSE}
+# Dados do Gráfico 9 Local de residência do aluno
+casos_local_estudante <- sort(table(dbf.xlsx$local_estudante, exclude = NULL))
+pct_casos_local_estudante <- paste(round(unname(casos_local_estudante) / 
+                                    sum(unname(casos_local_estudante)) * 100), "%")
+n = length(casos_local_estudante)
+names(casos_local_estudante) = c("Cidade da IES", "Outra cidade")
+```
+
+Outro fator importante a ser levado em consideração foi a questão de locomoção - impedidas pelas restrições e *lockdown* devido a pandemia - e o fato de que a maior parte dos respondentes da amostra não são residentes da cidade em que estudam, pois apenas `r casos_local_estudante[n-1]` (`r pct_casos_local_estudante[n-1]`) dos entrevistados residem na mesma cidade da universidade e/ou faculdade e a maioria, `r pct_casos_local_estudante[n]` (`r casos_local_estudante[n-1]` casos) em outras cidades (Gráfico 9).  
 
 ```{r, grafico-9, echo=FALSE}
-# Dados do Gráfico 9
-casos_aluno_mora_com <- table(dbf.csv$morando_com, exclude = NULL)
-pct_aluno_mora_com <- paste(round(unname(casos_aluno_mora_com) / 
-                                   sum(unname(casos_aluno_mora_com)) * 100), "%")
-#Gráfico 9: Aluno mora com quem?
+#Gráfico 9: Procedência do aluno
+# Aluno é da cidade da IES ou fora?
 # Gráfico tipo "pizza"
-pie(casos_aluno_mora_com,
+pie(casos_local_estudante,
     edges = 200, radius = 0.8,
     clockwise = T,
     density = NULL, angle = 90, col = c("orange", "blue", "red","black"),
-    labels = paste(names(casos_aluno_mora_com), "-", pct_aluno_mora_com),
-    main = "Gráfico 9: Aluno mora com/em")
+    labels = paste(names(casos_local_estudante), "-", pct_casos_local_estudante),
+    main = "Gráfico 9: Procedência do aluno")
 ```
+
+Destes, 90% estavam na sua residência permanente durante a pandemia e 10% não.  
 
 Conforme demonstrado no Gráfico 9, dos respondentes, 69% moravam com a família, seguido de 25% morando sozinho e, em último ficaram os que residiam em república ou com colega de quarto (6%).  
 
@@ -311,7 +383,7 @@ Sobre a decisão de fechar o campus para evitar a circulação de pessoas e, con
 
 ```{r, grafico-10, echo=FALSE}
 # Dados do Gráfico 10
-casos_fechar_ies <- table(dbf.csv$decisao_fechar, exclude = NULL)
+casos_fechar_ies <- table(dbf.xlsx$decisao_fechar, exclude = NULL)
 pct_fechar_ies <- paste(round(unname(casos_fechar_ies) / 
                                    sum(unname(casos_fechar_ies)) * 100), "%")
 #Gráfico 10: Fechar IES e utilizar ferramentas online
@@ -328,24 +400,24 @@ No que diz respeito à investigação se a Instituição de Nível Superior (IES
 
 ```{r, grafico-11, echo=FALSE}
 # Dados do Gráfico 11
-casos_migrou_virtual <- table(dbf.csv$migrou_virtual, exclude = NULL)
+casos_migrou_virtual <- table(dbf.xlsx$migrou_virtual, exclude = NULL)
 pct_migrou_virtual <- paste(round(unname(casos_migrou_virtual) / 
                                   sum(unname(casos_migrou_virtual)) * 100), "%")
 #Gráfico 11: IES migrou virtual
 # Gráfico tipo "pizza"
 pie(casos_migrou_virtual,
     edges = 200, radius = 0.8,
-    clockwise = T,
+    clockwise = F,
     density = NULL, angle = 90, col = c("black", "orange", "blue"),
     labels = paste(names(casos_migrou_virtual), "-", pct_migrou_virtual),
-    main = "Gráfico 11: IES migrou para virual")
+    main = "Gráfico 11: IES migrou para virtual")
 ```
 
 Já no tocante as formas de acesso aos recursos de infraestrutura oferecidos pela instituição (biblioteca, coordenação, orientação de assuntos acadêmicos, matrícula etc.) o Gráfico 12 mostra que, na opinião de 40% dos estudantes, o acesso aos recursos da IES pioraram durante a pandemia do COVID-19. Já 33% alegam que não houve mudanças. 
 
 ```{r, grafico-12, echo=FALSE}
 # Dados do Gráfico 12
-casos_acesso_infra_ies <- table(dbf.csv$acesso_infra_ies, exclude = NULL)
+casos_acesso_infra_ies <- table(dbf.xlsx$acesso_infra_ies, exclude = NULL)
 pct_acesso_infra_ies <- paste(round(unname(casos_acesso_infra_ies) / 
                                         sum(unname(casos_acesso_infra_ies)) * 100), "%")
 #Gráfico 12: Acesso à infra-estrutura da IES
@@ -364,7 +436,7 @@ Ao abordar o acesso ao corpo docente das IES durante a pandemia (Gráfico 13), a
 
 ```{r, grafico-13, echo=FALSE}
 # Dados do Gráfico 13
-casos_acesso_professores <- table(dbf.csv$acesso_professores, exclude = NULL)
+casos_acesso_professores <- table(dbf.xlsx$acesso_professores, exclude = NULL)
 pct_acesso_professores <- paste(round(unname(casos_acesso_professores) / 
                            sum(unname(casos_acesso_professores)) * 100), "%")
 #Gráfico 13: Acesso aos professores na pandemia
@@ -381,7 +453,7 @@ Quando questionados sobre a forma como as aulas foram ministradas durante a pand
 
 ```{r, grafico-14, echo=FALSE}
 # Dados do Gráfico 25
-casos_aulas <- table(dbf.csv$aulas_durante_pandemia, exclude = NULL)
+casos_aulas <- table(dbf.xlsx$aulas_durante_pandemia, exclude = NULL)
 pct_aulas <- paste(round(unname(casos_aulas) / 
                                sum(unname(casos_aulas)) * 100), "%")
 #Gráfico 14: Forma de ministrar as aulas
@@ -399,7 +471,7 @@ Após a vacinação e maior controle da pandemia, com dados coletados até o fin
 
 ```{r, grafico-15, echo=FALSE}
 # Dados do Gráfico 31
-casos_ies_reinicio <- table(dbf.csv$ies_reinicio, exclude = NULL)
+casos_ies_reinicio <- table(dbf.xlsx$ies_reinicio, exclude = NULL)
 names(casos_ies_reinicio) <- c("Em parte", "N/A ou Não sabe", "Não retornou", "Retornou todas atividades")
 pct_ies_reinicio <- paste(round(unname(casos_ies_reinicio) / 
                                  sum(unname(casos_ies_reinicio)) * 100), "%")
@@ -422,7 +494,7 @@ De modo geral, para os estudantes pesquisados o acesso a internet não mudou.
 
 ```{r, grafico-16, echo=FALSE}
 # Dados do Gráfico 16
-casos_acesso_internet <- table(dbf.csv$acesso_internet, exclude = NULL)
+casos_acesso_internet <- table(dbf.xlsx$acesso_internet, exclude = NULL)
 pct_acesso_internet <- paste(round(unname(casos_acesso_internet) / 
                                   sum(unname(casos_acesso_internet)) * 100), "%")
 #Gráfico 16: Acesso aos serviços de internet
@@ -439,7 +511,7 @@ No que concerne à mudança para o ensino virtual remoto e a mudança na forma d
 
 ```{r, grafico-30, echo=FALSE}
 # Dados do Gráfico 17
-casos_performance <- table(dbf.csv$desempenho_escolar, exclude = NULL)
+casos_performance <- table(dbf.xlsx$desempenho_escolar, exclude = NULL)
 pct_performance <- paste(round(unname(casos_performance) / 
                                 sum(unname(casos_performance)) * 100), "%")
 #Gráfico 17: Desempenho escolar
@@ -458,7 +530,7 @@ Quando questionados diretamente quais os fatos vivenciados durante o período ag
 
 ```{r, grafico-18, echo=FALSE}
 # Dados do Gráfico 18
-casos_aluno_vivenciou <- table(dbf.csv$vivenciou, exclude = NULL)
+casos_aluno_vivenciou <- table(dbf.xlsx$vivenciou, exclude = NULL)
 names(casos_aluno_vivenciou) <- c("Ajuda/assistência pessoas desconhecidas", "Alterações nas condições de vida", 
                                   "Dificuldade viajar/se deslocar", "Discriminação por desconhecidos", "Não se aplica")
 pct_aluno_vivenciou <- paste(round(unname(casos_aluno_vivenciou) / 
@@ -478,7 +550,7 @@ maneira importante. Os dados compilados no Gráfico 19 ilustram a opiniãodos al
 
 ```{r, grafico-34, echo=FALSE}
 # Dados do Gráfico 19
-casos_despesas <- table(dbf.csv$despesas, exclude = NULL)
+casos_despesas <- table(dbf.xlsx$despesas, exclude = NULL)
 pct_despesas <- paste(round(unname(casos_despesas) / 
                               sum(unname(casos_despesas)) * 100), "%")
 #Gráfico 19: Despesas durante a pandemia
@@ -495,7 +567,7 @@ Apesar da maioria dos entrevistados não terem sofrido com o aumento de despesas
 
 ```{r, grafico-20, echo=FALSE}
 # Dados do Gráfico 20
-casos_renda <- table(dbf.csv$renda_financeira, exclude = NULL)
+casos_renda <- table(dbf.xlsx$renda_financeira, exclude = NULL)
 pct_renda <- paste(round(unname(casos_renda) / 
                               sum(unname(casos_renda)) * 100), "%")
 #Gráfico 35: Renda durante a pandemia
@@ -514,7 +586,7 @@ Ainda que muitas universidades públicas ofereçam auxílio financeiro para que 
 
 ```{r, grafico-21, echo=FALSE}
 # Dados do Gráfico 21
-casos_ajuda <- table(dbf.csv$ajuda_financeira, exclude = NULL)
+casos_ajuda <- table(dbf.xlsx$ajuda_financeira, exclude = NULL)
 pct_ajuda <- paste(round(unname(casos_ajuda) / 
                            sum(unname(casos_ajuda)) * 100), "%")
 #Gráfico 21: Recebeu auxílio financeiro da IES
@@ -531,7 +603,7 @@ Quanto ao nível de endividamento durante a pandemia, os estudantes afirmaram qu
 
 ```{r, grafico-22, echo=FALSE}
 # Dados do Gráfico 22
-casos_endividamento <- table(dbf.csv$nivel_endividamento, exclude = NULL)
+casos_endividamento <- table(dbf.xlsx$nivel_endividamento, exclude = NULL)
 pct_endividamento <- paste(round(unname(casos_endividamento) / 
                            sum(unname(casos_endividamento)) * 100), "%")
 #Gráfico 22: Dívidas durante pandemia
@@ -553,7 +625,7 @@ Nesta questão de resposta múltipla os respondentes poderiam indicar mais de um
 # Descobrindo as ocorrências
 if(!("stringr") %in% installed.packages()) install.packages("stringr")
 library(stringr)
-perfil_despesas <- dbf.csv$despesas_cresceram # selecionando todos os casos da variável despesas cresceram
+perfil_despesas <- dbf.xlsx$despesas_cresceram # selecionando todos os casos da variável despesas cresceram
 relacionadas_saude <- length(na.omit(str_match(perfil_despesas, "Relacionadas com saúde")))
 viagens_deslocamentos <- length(na.omit(str_match(perfil_despesas, "Viagens/deslocamentos")))
 transporte_urbano <- length(na.omit(str_match(perfil_despesas, "Transporte urbano")))
@@ -598,7 +670,7 @@ if(!"tm" %in% installed.packages()) install.packages("tm")
 library(tm)
 
 #Carregando o texto e eliminando os NA (missing data)
-texto <- na.omit(dbf.csv$situação_durante_pandemia)
+texto <- na.omit(dbf.xlsx$situação_durante_pandemia)
 
 # Criando um corpus  
 docs <- Corpus(VectorSource(texto))
@@ -637,7 +709,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 ```{r, grafico-25, echo=FALSE}
 #Gráfico 24: Qualidade de vida
 #Carregando o texto e eliminando os NA (missing data)
-texto <- na.omit(dbf.csv$qualidade_de_vida)
+texto <- na.omit(dbf.xlsx$qualidade_de_vida)
 # Criando um corpus  
 docs <- Corpus(VectorSource(texto))
 # Limpando o texto
@@ -670,7 +742,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 ```{r, grafico-26, echo=FALSE}
 #Gráfico 41: IES fez de positivo na pandemia
 #Carregando o texto e eliminando os NA (missing data)
-texto <- na.omit(dbf.csv$ies_positivo)
+texto <- na.omit(dbf.xlsx$ies_positivo)
 # Criando um corpus  
 docs <- Corpus(VectorSource(texto))
 # Limpando o texto
@@ -700,7 +772,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 ```{r, grafico-27, echo=FALSE}
 #Gráfico 42: IES poderia melhorar na pandemia
 #Carregando o texto e eliminando os NA (missing data)
-texto <- na.omit(dbf.csv$ies_melhorar)
+texto <- na.omit(dbf.xlsx$ies_melhorar)
 # Criando um corpus  
 docs <- Corpus(VectorSource(texto))
 # Limpando o texto
@@ -730,7 +802,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 ```{r, grafico-28, echo=FALSE}
 #Gráfico 43: IES poderia melhor ajudar na pandemia
 #Carregando o texto e eliminando os NA (missing data)
-texto <- na.omit(dbf.csv$ies_ajudar)
+texto <- na.omit(dbf.xlsx$ies_ajudar)
 # Criando um corpus  
 docs <- Corpus(VectorSource(texto))
 # Limpando o texto
@@ -763,7 +835,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 
 ```{r, grafico-nono, echo=FALSE}
 # Dados do Gráfico 30
-casos_prosseguir_estudos <- table(dbf.csv$capacidade_prosseguir_estudos, exclude = NULL)
+casos_prosseguir_estudos <- table(dbf.xlsx$capacidade_prosseguir_estudos, exclude = NULL)
 pct_prosseguir_estudos <- paste(round(unname(casos_prosseguir_estudos) / 
                                      sum(unname(casos_prosseguir_estudos)) * 100), "%")
 #Gráfico 30: Capacidade prosseguir estudos
@@ -778,7 +850,7 @@ pie(casos_prosseguir_estudos,
 
 ```{r, grafico-xoxo, echo=FALSE}
 # Dados do Gráfico 31
-casos_socializacao <- table(dbf.csv$capacidade_socializacao, exclude = NULL)
+casos_socializacao <- table(dbf.xlsx$capacidade_socializacao, exclude = NULL)
 pct_socializacao <- paste(round(unname(casos_socializacao) / 
                                         sum(unname(casos_socializacao)) * 100), "%")
 #Gráfico 31: Capacidade de socialização
@@ -793,7 +865,7 @@ pie(casos_socializacao,
 
 ```{r, grafico-yoyo, echo=FALSE}
 # Dados do Gráfico 32
-casos_bem_estar <- table(dbf.csv$bem_estar_psicologico, exclude = NULL)
+casos_bem_estar <- table(dbf.xlsx$bem_estar_psicologico, exclude = NULL)
 pct_bem_estar <- paste(round(unname(casos_bem_estar) / 
                                   sum(unname(casos_bem_estar)) * 100), "%")
 #Gráfico 32: Bem-estar psicológico
@@ -810,7 +882,7 @@ pie(casos_bem_estar,
 
 ```{r, grafico-zaza, echo=FALSE}
 # Dados do Gráfico 33
-casos_espaco_fisico <- table(dbf.csv$espaco_físico, exclude = NULL)
+casos_espaco_fisico <- table(dbf.xlsx$espaco_físico, exclude = NULL)
 pct_espaco_fisico <- paste(round(unname(casos_espaco_fisico) / 
                                       sum(unname(casos_espaco_fisico)) * 100), "%")
 #Gráfico 33: Espaço físico utilizado para atividades escolares
@@ -825,7 +897,7 @@ pie(casos_espaco_fisico,
 
 ```{r, grafico-mana, echo=FALSE}
 # Dados do Gráfico 34
-casos_disposicao <- table(dbf.csv$disposicao_atividades, exclude = NULL)
+casos_disposicao <- table(dbf.xlsx$disposicao_atividades, exclude = NULL)
 pct_disposicao <- paste(round(unname(casos_disposicao) / 
                                    sum(unname(casos_disposicao)) * 100), "%")
 #Gráfico 34: Disposição para participar das atividades escolares
@@ -841,7 +913,7 @@ pie(casos_disposicao,
 
 ```{r, grafico-mona, echo=FALSE}
 # Dados do Gráfico 35
-casos_ansiedade <- table(dbf.csv$nivel_ansiedade, exclude = NULL)
+casos_ansiedade <- table(dbf.xlsx$nivel_ansiedade, exclude = NULL)
 pct_aniedade <- paste(round(unname(casos_ansiedade) / 
                                 sum(unname(casos_ansiedade)) * 100), "%")
 #Gráfico 35: Nível de ansiedade para o futuro
@@ -856,7 +928,7 @@ pie(casos_ansiedade,
 
 ```{r, grafico-zumba, echo=FALSE}
 # Dados do Gráfico 36
-casos_ansiedade_planejamento <- table(dbf.csv$ansiedade_planejamento, exclude = NULL)
+casos_ansiedade_planejamento <- table(dbf.xlsx$ansiedade_planejamento, exclude = NULL)
 pct_ansiedade_planejamento <- paste(round(unname(casos_ansiedade_planejamento) / 
                               sum(unname(casos_ansiedade_planejamento)) * 100), "%")
 #Gráfico 36: Nível de ansiedade para planejamento pessoal
@@ -871,7 +943,7 @@ pie(casos_ansiedade_planejamento,
 
 ```{r, grafico-cuca, echo=FALSE}
 # Dados do Gráfico 37
-casos_ansiedade_longo <- table(dbf.csv$ansiedade_longo_prazo, exclude = NULL)
+casos_ansiedade_longo <- table(dbf.xlsx$ansiedade_longo_prazo, exclude = NULL)
 pct_ansiedade_longo <- paste(round(unname(casos_ansiedade_longo) / 
                                             sum(unname(casos_ansiedade_longo)) * 100), "%")
 #Gráfico 37: Nível de ansiedade para planejamento a longo prazo
@@ -891,7 +963,7 @@ pie(casos_ansiedade_longo,
 ```{r, grafico-38, echo=FALSE}
 #Gráfico 38: Dificuldades financeiras durante a pandemia
 #Carregando o texto e eliminando os NA (missing data)
-texto <- na.omit(dbf.csv$dificuldades_financeiras)
+texto <- na.omit(dbf.xlsx$dificuldades_financeiras)
 # Criando um corpus  
 docs <- Corpus(VectorSource(texto))
 # Limpando o texto
@@ -922,7 +994,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 ```{r, grafico-sobrou, echo=FALSE}
 #Gráfico 39: Dificuldades acadêmicas durante a pandelia
 #Carregando o texto e eliminando os NA (missing data)
-texto <- na.omit(dbf.csv$dificuldades_academicas)
+texto <- na.omit(dbf.xlsx$dificuldades_academicas)
 # Criando um corpus  
 docs <- Corpus(VectorSource(texto))
 # Limpando o texto
@@ -953,7 +1025,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 ```{r, grafico-40, echo=FALSE}
 #Gráfico 40: Comentários finais
 #Carregando o texto e eliminando os NA (missing data)
-texto <- na.omit(dbf.csv$detalhes_finais)
+texto <- na.omit(dbf.xlsx$detalhes_finais)
 
 # Criando um corpus  
 docs <- Corpus(VectorSource(texto))
@@ -990,7 +1062,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 
 ```{r, grafico-nana, echo=FALSE}
 # Dados do Gráfico 19
-casos_acesso_saude <- table(dbf.csv$acesso_servicos_saude, exclude = NULL)
+casos_acesso_saude <- table(dbf.xlsx$acesso_servicos_saude, exclude = NULL)
 pct_acesso_saude <- paste(round(unname(casos_acesso_saude) / 
                                      sum(unname(casos_acesso_saude)) * 100), "%")
 #Gráfico 19: Acesso aos serviços de saude

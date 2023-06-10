@@ -6,15 +6,15 @@
 # Lendo o arquivo em .xlsx
 if (!("readxl") %in% installed.packages()) install.packages("readxl")
 library(readxl)
-dbf.xlsx <- read_excel("./dados/COVID19IES.xlsx")
+dbf.xlsx <- read_excel("./dados/COVID-19-E-IES-2023.xlsx")
 
 # Lendo o arquivo em .csv
-dbf.csv <-read.csv("./dados/COVID19IES.csv", header = TRUE, sep = ";", quote = "\"", dec = ".")
+dbf.csv <-read.csv("./dados/COVID-19-E-IES-2023.csv", header = TRUE, sep = ";", quote = "\"", dec = ".")
 
 # Lendo o arquivo em .ods
 if (!("readODS") %in% installed.packages()) install.packages("readODS")
 library(readODS)
-dbf.ods <- read_ods("./dados/COVID19IES.ods")
+dbf.ods <- read_ods("./dados/COVID-19-E-IES-2023.ods")
 
 # Utilizando o pacote smartEDA no dataframe
 if(!("SmartEDA") %in% installed.packages()) install.packages("SmartEDA")
@@ -30,18 +30,18 @@ ExpData(data=dbf.xlsx,type=2)
 # número total de observações no dataframe
 total_casos <- nrow(dbf.xlsx)
 total_casos  
-#[1] 52
+#[1] 87
 
 ## Gráfico 1 Faixa Etária dos respondentes
 casos_idade <- table(dbf.xlsx$idade)
 casos_idade
-#17 18 19 20 21 22 23 25 26 28 29 30 34 35 37 40 41 43 46 48 51 54 55 60 
-# 1  1  3  4  2  3  4  4  3  1  1  1  1  2  1  3  3  4  1  2  2  2  2  1  
-
+# 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 33 34 35 37 39 40 41 43 46 47 48 49 51 54 55 57 60 
+#  1  1  8  5  8  5  8  3  5  4  3  1  1  1  2  1  2  2  1  1  3  3  4  1  1  2  1  2  2  2  1  1
 #Cálculo da porcentagem das faixas etárias
 pct_idade <- paste0(round(unname(casos_idade) / sum(unname(casos_idade)) * 100,0), "%")
 pct_idade  
-#[1] "2%" "2%" "6%" "8%" "4%" "6%" "8%" "8%" "6%" "2%" "2%" "2%" "2%" "4%" "2%" "6%" "6%" "8%" "2%" "4%" "4%" "4%" "4%" "2%"
+#  [1] "1%" "1%" "9%" "6%" "9%" "6%" "9%" "3%" "6%" "5%" "3%" "1%" "1%" "1%" "2%" "1%" "2%" "2%" "1%" "1%" "3%" "3%" "5%" "1%" "1%" "2%" "1%" "2%"
+# [29] "2%" "2%" "1%" "1%"
 
 # Gráfico do tipo barra das faixas etárias
 graph.idade <- barplot(casos_idade, 
@@ -67,6 +67,7 @@ axis(1, at=graph.idade, labels=paste("(", pct_idade, ")"), tick=F, las=1, line=-
 idade_concat <- data.frame(idade=dbf.xlsx$idade, faixa_etaria="")
 
 for (k in 1:nrow(idade_concat)) {
+  if(is.na(idade_concat$idade[k])) idade_concat$faixa_etaria[k] <- "ND"
   if(idade_concat$idade[k] <= 21) idade_concat$faixa_etaria[k] <- "de 17 a 21 anos"
   if(idade_concat$idade[k] >= 22 & idade_concat$idade[k] <= 26) idade_concat$faixa_etaria[k] <- "de 22 a 26 anos"
   if(idade_concat$idade[k] >= 27 & idade_concat$idade[k] <= 31) idade_concat$faixa_etaria[k] <- "de 27 a 31 anos"
@@ -75,7 +76,7 @@ for (k in 1:nrow(idade_concat)) {
   if(idade_concat$idade[k] >= 42 & idade_concat$idade[k] <= 46) idade_concat$faixa_etaria[k] <- "de 42 a 46 anos" 
   if(idade_concat$idade[k] >= 47 & idade_concat$idade[k] <= 51) idade_concat$faixa_etaria[k] <- "de 47 a 51 anos" 
   if(idade_concat$idade[k] >= 52 & idade_concat$idade[k] <= 56) idade_concat$faixa_etaria[k] <- "de 52 a 56 anos"
-  if(idade_concat$idade[k] >= 57 & idade_concat$idade[k] <= 61) idade_concat$faixa_etaria[k] <- "de 57 a 61 anos"
+  if(idade_concat$idade[k] >= 57 & idade_concat$idade[k] <= 61) idade_concat$faixa_etaria[k] <- "de 57 a 61 anos" 
   if(idade_concat$idade[k] > 61) idade_concat$faixa_etaria[k] <- "acima de 61 anos"
 }
 
@@ -104,11 +105,11 @@ axis(1, at=graph.idade_concat, labels=paste("(", pct_idade3, ")"), tick=F, las=1
 # Dados do Gráfico 2
 casos_genero <- table(dbf.xlsx$genero)
 casos_genero
-# Feminino              Homem gay              Masculino Transgênero/Transexual 
-#       24                      1                     25                      2 
+#  Feminino      LGBT Masculino 
+#        44         3        40                      2 
 pct_genero <- paste(round(unname(casos_genero) / sum(unname(casos_genero)) * 100), "%")
 pct_genero  
-#[1] "46 %" "2 %"  "48 %" "4 %" 
+#[1] "51 %" "3 %"  "46 %"
 
 #Gráfico 2: Quantidade de respondentes por sexo
 # Gráfico tipo "pizza"
@@ -122,12 +123,14 @@ pie(casos_genero,
 # Dados do Gráfico 3
 casos_conjugal <- table(dbf.xlsx$situacao_conjugal)
 casos_conjugal
-#  Casado(a)   Divorciado(a)/Separado(a)                 Solteiro(a) União Estável/Vivendo junto   Viúvo(a)
-#         16                           2                          28                           5          1 
-
+#Casado(a)   Divorciado(a)/Separado(a)                 Solteiro(a) União Estável/Vivendo junto 
+#       20                           3                          55                           8 
+# Viúvo(a) 
+#        1 
+ 
 pct_conjugal <- paste(round(unname(casos_conjugal) / sum(unname(casos_conjugal)) * 100), "%")
 pct_conjugal  
-#[1] "46 %" "2 %"  "48 %" "4 %" 
+#[1] "23 %" "3 %"  "63 %" "9 %"  "1 %" 
 
 #Gráfico 3: Quantidade de respondentes por sutuação conjugal
 # Gráfico tipo "pizza"
@@ -141,33 +144,24 @@ pie(casos_conjugal,
 # Dados do Gráfico 4
 casos_emprego <- table(dbf.xlsx$situacao_empregaticia)
 casos_emprego
-#                  Aposentada                                        Bolsista 
-#                           1                                              10 
-#         Corretor de Imóveis  Dependente (dos pais) com vínculo empregatício 
-#                           1                                               1 
-#Dependente (dos pais, etc.)                                  Desempregado(a) 
-#                           7                                               2 
-#                Empregado(a)                                      Empresária 
-#                          24                                               1 
-#               Estagiário(a)              Micro-empresário instituído por ME 
-#                           2                                               1 
-#           Servidora pública tatuador autônomo, mas conto com ajuda dos pais 
-#                           1                                               1
+#                 Aposentada                 Autônomo(a)                    Bolsista Dependente (dos pais, etc.)             Desempregado(a)                Empregado(a) 
+#                           1                          4                          12                          17                           4                          41 
+#               Estagiário(a)           Servidora pública 
+#                           7                           1 
 
 # Rótulos muito grandes  em grande quantidade. Dificuldade para exibir nos gráficos
 # Redução proposital dos textos
-names(casos_emprego) <- c("Aposentada", "Bolsista","Corretor", "Dep./Empr.", "Dependente",
-                          "Desemp.","Empregado","Empresária","Estagiário","Micro-emp.",
-                          "Serv. púb.", "Autôn/Dep.")
+names(casos_emprego) <- c("Aposentado","Autônomo", "Bolsista", "Desempregado","Empregado", 
+                          "Estagiário","Serv. público", "ND")
 casos_emprego
-#Aposentada   Bolsista   Corretor Dep./Empr. Dependente    Desemp.  Empregado Empresária Estagiário Micro-emp. Serv. púb. Autôn/Dep. 
-#         1         10          1          1          7          2         24          1          2          1          1          1 
+#Aposentado      Autônomo      Bolsista  Desempregado     Empregado    Estagiário Serv. público          <NA> 
+#         1             4            12            17             4            41             7             1  
 
 pct_emprego <- paste(round(unname(casos_emprego) / sum(unname(casos_emprego)) * 100), "%")
 pct_emprego
-#[1] "2 %"  "19 %" "2 %"  "2 %"  "13 %" "4 %"  "46 %" "2 %"  "4 %"  "2 %"  "2 %"  "2 %" 
+#[1] "1 %"  "5 %"  "14 %" "20 %" "5 %"  "47 %" "8 %"  "1 %"  
 
-#Gráfico 4: Quantidade de respondentes por sutuação empregatícia
+#Gráfico 4: Quantidade de respondentes por situação empregatícia
 # Gráfico tipo "pizza"
 pie(casos_emprego,
     edges = 200, radius = 0.8,
@@ -187,15 +181,35 @@ text(x = graph.casos_emprego, y = casos_emprego, label = unname(casos_emprego), 
 axis(1, at=graph.casos_emprego, labels=paste("(", pct_emprego, ")"), tick=F, las=1, line=-1.0, cex.axis= 1.1)
 
 # Dados do Gráfico 5
+casos_tipo_ies<- table(dbf.xlsx$tipo_ies, exclude = NULL)
+casos_tipo_ies
+# Privada Pública 
+#      10      77 
+
+pct_tipo_ies <- paste(round(unname(casos_tipo_ies) / sum(unname(casos_tipo_ies)) * 100), "%")
+pct_tipo_ies
+# [1] "11 %" "89 %"
+
+#Gráfico 5: Quantidade de respondentes por tipo de mantenedora de instituição de ensino
+# Gráfico tipo "pizza"
+pie(casos_tipo_ies,
+    edges = 200, radius = 0.8,
+    clockwise = T,
+    density = NULL, angle = 90, col = c("red", "orange", "blue"),
+    labels = paste(names(casos_tipo_ies), "-", pct_tipo_ies),
+    main = "Gráfico 5: Respondentes por tipo de mantenedora")
+
+# Dados do Gráfico 5
 casos_estado <- table(dbf.xlsx$estado_reside, exclude = NULL)
 casos_estado
-#  AM   SP <NA> 
-#   1   47    4
+# AM PR SP 
+#  1  1 85 
 
 pct_estado <- paste(round(unname(casos_estado) / sum(unname(casos_estado)) * 100), "%")
 pct_estado  
-#[1] "2 %"  "90 %" "8 %"
-names(pct_estado) <-c("Amazonas", "São Paulo", "Não Respondeu")
+# "1 %"  "1 %"  "98 %"
+
+names(pct_estado) <-c("Amazonas", "Paraná", "São Paulo")
 
 #Gráfico 5: Quantidade de respondentes por estado
 # Gráfico tipo "pizza"
@@ -206,18 +220,27 @@ pie(casos_estado,
     labels = paste(names(pct_estado), "-", pct_estado),
     main = "Gráfico 5: Quantidade de respondentes por estado")
 
+# Gráfico 6: Quantidade de respondentes por Instituição de Ensino Superior
 # Dados do Gráfico 6
 casos_ies <- table(dbf.xlsx$ies, exclude = NULL)
 casos_ies
+#       ETEC      FATEC        FGV        FIJ        FMJ      IMESB        ITE     SEBRAE       UFRJ     UFSCar      UNESP     UNIARA UNISAGRADO     UNOPAR        USP 
+#          1          1          2          2          2          1          1          1          1          2         68          1          2          1          1 
 
-pct_ies <- paste(round(unname(casos_ies) / sum(unname(casos_ies)) * 100), "%")
+pct_ies <- round(unname(casos_ies) / sum(unname(casos_ies)) * 100)
+pct_ies
+sem_unesp_ies = 100 - pct_ies[11]
+sem_unesp_ies = paste(sem_unesp_ies, "%")
+sem_unesp_ies
+pct_ies <- paste(pct_ies, "%")
 pct_ies  
-# [1] "2 %"  "4 %"  "2 %"  "2 %"  "2 %"  "2 %"  "2 %"  "4 %"  "2 %"  "75 %" "2 %"  "2 %" 
-
+#[1] "1 %"  "1 %"  "2 %"  "2 %"  "2 %"  "1 %"  "1 %"  "1 %"  "1 %"  "2 %"  "78 %" "1 %"  "2 %"  "1 %"  "1 %" 
+ 
 # Rótulos muito grandes e dispersos. Dificulta a exibição nos gráficos!
 # Redução proposital no tamanho dos textos
-names(casos_ies) <- c("ETEC", "FMJundiaí", "FJaú", "Fatec Catanduva", "FGV", "IMESB",
-                          "SEBRAE", "UFSCar", "UNESP", "UNIARA", "UNOPAR")
+names(casos_ies) <- c("ETEC", "FATEC", "FGV", "FJaú", "FMJund", "IMESB", " ITE", 
+                      "SEBRAE", "UFRJ", "UFSCar", "UNESP", "UNIARA", "UNISAG", 
+                      "UNOPAR", "USP")
                           
 # Gráfico 6 do tipo barra Instituição de Ensino Superior
 graph.casos_ies <- barplot(casos_ies,
@@ -228,51 +251,67 @@ graph.casos_ies <- barplot(casos_ies,
                                col = "orange",
                                ylim = c(0,max(casos_ies) + 10)
 )
-text(x = graph.casos_ies, y = casos_ies, label = unname(pct_ies), cex=1, pos=3)
+text(x = graph.casos_ies, y = casos_ies, label = unname(casos_ies), cex=1, pos=3)
 axis(1, at=graph.casos_ies, labels=paste("(", pct_ies , ")"), tick=F, las=1, line=-1.0, cex.axis= 1.1)
+
+# Dados do Gráfico 7
+casos_vacinado <- table(dbf.xlsx$vacinado, exclude = NULL)
+casos_vacinado
+names(casos_vacinado) <- c("Duas doses ou dose única", 
+                           "Duas doses ou dose única e reforço",
+                           "Com a 1a. dose",
+                           "N/A ou Não quero responder")
+pct_vacinado <- paste(round(unname(casos_vacinado) / 
+                              sum(unname(casos_vacinado)) * 100), "%")
+pct_vacinado
+#[1] "31 %" "61 %" "1 %"  "7 %"
+
+#Gráfico 7: Está vacinado
+# Gráfico tipo "pizza"
+pie(casos_vacinado,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray",  "red", "blue","orange", "black", "white", "green"),
+    labels = paste(names(casos_vacinado), "-", pct_vacinado),
+    main = "Gráfico 7: Vacinação contra Covid-19")
 
 # Dados do Gráfico 7
 casos_nivel <- table(dbf.xlsx$nivel_ensino, exclude = NULL)
 casos_nivel
 # Doutorado     Ensino Técnico Especialização/MBA          Graduação           Mestrado      Pós-doutorado 
-#        15                  1                  1                 21                 13                  1 
+#        20                  1                  1                 46                 18                  1 
 
 pct_nivel <- paste(round(unname(casos_nivel) / sum(unname(casos_nivel)) * 100), "%")
 pct_nivel  
-#[1] "29 %" "2 %"  "2 %"  "40 %" "25 %" "2 %"
+#[1] "23 %" "1 %"  "1 %"  "53 %" "21 %" "1 %"
 
-# Rótulos muito grandes e dispersos. Dificulta a exibição nos gráficos!
-# Redução proposital no tamanho dos textos
-names(casos_ies) <- c("ETEC", "FMJundiaí", "FJaú", "Fatec Catanduva", "FGV", "IMESB",
-                      "SEBRAE", "UFSCar", "UNESP", "UNIARA", "UNOPAR")
-
-# Gráfico 7 do tipo barra sitação empregatícia
-graph.casos_ies <- barplot(casos_ies,
+# Gráfico 7 do tipo barra respondentes por nível de graduação
+graph.casos_nivel <- barplot(casos_nivel,
                            horiz = F,
-                           main = "Gráfico 6: Quantidade de respondentes por Instituição de Ensino Superior",
+                           main = "Gráfico 7: Quantidade de respondentes por Graduação",
                            xlab = "IES", 
                            ylab = "Respondentes",
                            col = "orange",
-                           ylim = c(0,max(casos_ies) + 10)
+                           ylim = c(0,max(casos_nivel) + 10)
 )
-text(x = graph.casos_ies, y = casos_ies, label = unname(pct_ies), cex=1, pos=3)
-axis(1, at=graph.casos_ies, labels=paste("(", pct_ies , ")"), tick=F, las=1, line=-1.0, cex.axis= 1.1)
+text(x = graph.casos_ies, y = casos_nivel, label = unname(casos_nivel), cex=1, pos=3)
+axis(1, at=graph.casos_ies, labels=paste("(", pct_nivel , ")"), tick=F, las=1, line=-1.0, cex.axis= 1.1)
 
 # Dados do Gráfico 8
 casos_ensino<- table(dbf.xlsx$nivel_ensino, exclude = NULL)
 casos_ensino
 # Doutorado     Ensino Técnico Especialização/MBA          Graduação           Mestrado      Pós-doutorado 
-#        15                  1                  1                 21                 13                  1 
+#        20                  1                  1                 46                 18                  1  
 
 pct_ensino <- paste(round(unname(casos_ensino) / sum(unname(casos_ensino)) * 100), "%")
 pct_ensino  
-#[1] "29 %" "2 %"  "2 %"  "40 %" "25 %" "2 %" 
+#[1] "23 %" "1 %"  "1 %"  "53 %" "21 %" "1 %" 
 
 #Gráfico 8: Quantidade de respondentes nível de ensino
 # Gráfico tipo "pizza"
 pie(casos_ensino,
     edges = 200, radius = 0.8,
     clockwise = T,
-    density = NULL, angle = 90, col = c("red", "orange", "yellow", "green", "black"),
+    density = NULL, angle = 90, col = c("red", "orange", "yellow", "green", "black", "blue"),
     labels = paste(names(casos_ensino), "-", pct_ensino),
-    main = "Gráfico 5: Quantidade de respondentes por nível de ensino")
+    main = "Gráfico 5: Quantidade de respondentes por graduação")

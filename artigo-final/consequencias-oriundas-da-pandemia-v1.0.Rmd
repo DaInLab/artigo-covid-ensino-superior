@@ -11,7 +11,7 @@ author:
   affiliation: "Universidade Estadual Paulista Júlio de Mesquita Filho - UNESP/Bauru"
   e-mail: jp.albino@unesp.br
   url: "<https://www.faac.unesp.br/#!/pos-graduacao/>"
-date: "1 jun. 2023"
+date: "11 jul. 2023"
 output:
   html_document:
     df_print: paged
@@ -32,8 +32,24 @@ abstract: "Em março de 2020, a Organização Mundial de Saúde (ONU) declarou o
   compreender como a pandemia afetou os estudantes universitários.\n"
 ---
 
-```{r, include=FALSE}
+```{r setup_geral, include=FALSE}
 options(tinytex.verbose = TRUE)
+
+knitr::opts_chunk$set(echo = TRUE) # Opções de compilação inicial: Mostrar código fonte no texto
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) # Opções de compilação: NÃO mostrar mensagens de erro e de aviso no texto
+
+#Carregando os pacotes necessários ao programa
+if(!"wordcloud" %in% installed.packages()) install.packages("wordcloud")
+library(wordcloud)
+if(!"wordcloud2" %in% installed.packages()) install.packages("wordcloud2")
+library(wordcloud2)
+if(!"RColorBrewer" %in% installed.packages()) install.packages("RColorBrewer")
+library(RColorBrewer)
+if(!"tm" %in% installed.packages()) install.packages("tm")
+library(tm)
+if(!"magrittr" %in% installed.packages()) install.packages("magrittr") # Para utilizar o comando "pipe" (%>%) ou operador "tee pipe" (%T>%)
+library(magrittr)
+
 ```
 
 ```{r setup_inicial, include=FALSE}
@@ -60,8 +76,6 @@ if (get_os() == "osx"){
      knitr::opts_knit$set(root.dir = "/Volumes/Extension/GitHub/artigo-covid-ensino-superior") # Deve ser modificado de acordo com o diretório de trabalho no computador 
 }
 
-knitr::opts_chunk$set(echo = TRUE) # Opções de compilação inicial: Mostrar código fonte no texto
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) # Opções de compilação: NÃO mostrar mensagens de erro e de aviso no texto
 ```
 
 ```{r importar_dados, echo=FALSE}
@@ -119,7 +133,6 @@ Além disso, a ciência de dados pode ser usada para desenvolver modelos prediti
 É importante ressaltar que a análise de dados em relação à COVID-19 na população universitária foi realizada com todo o cuidado e atenção, levando em consideração questões éticas e de privacidade dos indivíduos envolvidos, sendo a pesquisa aprovada pelo conselho de ética da UNESP e registrada na Plataforma Brasil sob o CAAE: 47289921.9.0000.5663.  
 Este artigo apresenta o relatório da análise exploratória de dados sobre como a pandemia de Coronavírus (Covid-19) afetou a vida e cotidiano dos estudantes universitários. O questionário ficou disponível de abril de 2021 a dezembro de 2022, contendo 50 questões. 
 
-
 ```{r, sumario, echo=FALSE}
 # Sumário do data set
 # número total de observações no data frame
@@ -137,7 +150,7 @@ sem_unesp_ies = paste(sem_unesp_ies, "%")
 pct_ies <- paste0(pct_ies, "%")
 ```
 
-Como pode ser observado na figura do Gráfico 1, a pesquisa contou com a participação de `r total_casos` integrantes, sendo que `r pct_genero[3]` se declaram do gênero masculino, `r pct_genero[1]` feminino e `r pct_genero[2]` LGBT. A amostra foi composta ainda por `r pct_ies[11]` de alunos da UNESP e `r sem_unesp_ies` de demais instituições. 
+Como pode ser observado na figura do Gráfico 1, a pesquisa contou com a participação de `r total_casos` integrantes, sendo que `r pct_genero[3]` se declaram do gênero masculino, `r pct_genero[1]` feminino e `r pct_genero[2]` LGBT. A amostra foi composta ainda por `r pct_ies[11]` de alunos da UNESP e `r sem_unesp_ies` de outras instituições. 
 
 ```{r, grafico-1, echo=FALSE}
 # Dados do Gráfico 1
@@ -155,7 +168,7 @@ pie(casos_genero,
 
 ## Análise Exploratória de Dados
 A Análise Exploratória de Dados (AED), de acordo com James et al. (2013), é uma abordagem de análise de dados que se concentra em compreender e resumir as principais características dos dados por meio de técnicas estatísticas e gráficas. O principal objetivo da AED é descobrir padrões, tendências, anomalias e relações entre as variáveis em um conjunto de dados, com o objetivo de gerar hipóteses e **insights** para análises mais aprofundadas, afirmam os autores.  
-De acordo com Tukey (1977), o processo de AED envolve a "coleta de dados, organização, sumarização, análise exploratória, modelagem e comunicação dos resultados". A AED pode ser realizada tanto em conjuntos de dados pequenos quanto grandes e complexos, e pode ser aplicada em diversas áreas, como ciências sociais, biologia, economia, engenharia, dentre outras.  
+De acordo com Tukey (1977), o processo de AED envolve a "coleta de dados, organização, sumarização, análise exploratória, modelagem e comunicação dos resultados". A AED pode ser realizada tanto em conjuntos de dados pequenos quanto grandes e complexos, e pode ser aplicada em diversas áreas, como ciências sociais, biologia, economia, engenharia, entre outras.  
 
 ```{r, grafico-2-pre-calc, echo=FALSE}
 ## Calculando valores para o Gráfico 2 - Faixa Etária dos respondentes
@@ -309,7 +322,7 @@ pct_emprego <- paste(round(unname(sort(casos_emprego)) / sum(unname(sort(casos_e
 n <- length(casos_emprego)
 ```
 
-Ao analisar as condições financeiras dos participantes por meio do Gráfico 6, foi possível identificar que, do total de participantes da amostra, `r pct_emprego[n-0])` são `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-0)[n-0]))), "s")`, `r pct_emprego[n-1])` estão `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-1)[n-1]))), "s")`, `r pct_emprego[n-2])` são `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-2)[n-2]))), "s")` e `r pct_emprego[n-3])` são `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-3)[n-3]))), "s")`.
+Ao analisar as condições financeiras dos participantes por meio do Gráfico 6, foi possível identificar que, do total de participantes da amostra, `r pct_emprego[n-0]` são `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-0)[n-0]))), "s")`, `r pct_emprego[n-1]` estão `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-1)[n-1]))), "s")`, `r pct_emprego[n-2]` são `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-2)[n-2]))), "s")` e `r pct_emprego[n-3]` são `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-3)[n-3]))), "s")`.
 
 ```{r, grafico-6, echo=FALSE}
 # Gráfico 6 do tipo barra sitação empregatícia
@@ -323,7 +336,7 @@ text(x = graph.casos_emprego, y = sort(casos_emprego), label = unname(sort(casos
 axis(1, at=graph.casos_emprego, labels=paste("(", pct_emprego, ")"), tick=F, las=1, line=-1.0, cex.axis= 1.1)
 ```
 
-Ainda com relação ao vículo empregatício da amostra, pode-se também pobservar na figura do Gráfico 6 que `r pct_emprego[n-4])` estão `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-4)[n-4]))), "s")`, `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-5)[n-5]))), "s")` representam `r pct_emprego[n-5])` dos casos e `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-6)[n-6]))), "s")` e  `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-7)[n-7]))), "s")` são apenas `r pct_emprego[n-7])` dos respondentes.
+Ainda com relação ao vículo empregatício da amostra, pode-se também pobservar na figura do Gráfico 6 que `r pct_emprego[n-4]` estão `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-4)[n-4]))), "s")`, `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-5)[n-5]))), "s")` representam `r pct_emprego[n-5]` dos casos e `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-6)[n-6]))), "s")` e  `r paste0(tolower(names(sort(sort(casos_emprego,partial=n-7)[n-7]))), "s")` são apenas `r pct_emprego[n-7]` dos respondentes.
 
 ```{r, grafico-7-prep-calc, echo=FALSE}
 # Dados do Gráfico 7: Foi vacinado?
@@ -338,7 +351,7 @@ total_vacina = round(sum(unname(casos_vacinado[1:2]))/sum(unname(casos_vacinado)
 
 ```
 
-Com relação questão da vacinação contra a COVID-19, nesta amostra, a maioria dos estudantes (`r paste0(total_vacina, "%")`foi vacinada, como é possível observar no Gráfico 7, somando-se os dados dos que foram imunizados com duas doses ou dose única e os com duas doses ou dose única e reforço (Gráfico 7).  
+Com relação questão da vacinação contra a COVID-19, nesta amostra, a maioria dos estudantes (`r paste0(total_vacina, "%")`foi vacinada, como é possível observar no Gráfico 7, somando-se os dados dos que foram imunizados com duas doses ou dose única e os com duas doses ou dose única e reforço.  
 
 ```{r, grafico-7, echo=FALSE}
 # Dados do Gráfico 7: Foi vacinado?
@@ -360,7 +373,7 @@ n = length(casos_local_estudante)
 names(casos_local_estudante) = c("Cidade da IES", "Outra cidade")
 ```
 
-Outro fator importante a ser levado em consideração foi a questão de locomoção - impedidas pelas restrições e *lockdown* devido a pandemia - e o fato de que a maior parte dos respondentes da amostra não são residentes da cidade em que estudam, pois apenas `r casos_local_estudante[n-1]` (`r pct_casos_local_estudante[n-1]`) dos entrevistados residem na mesma cidade da universidade e/ou faculdade e a maioria, `r pct_casos_local_estudante[n]` (`r casos_local_estudante[n-1]` casos) em outras cidades (Gráfico 9).  
+Outro fator importante a ser levado em consideração foi a questão de locomoção - impedidas pelas restrições e *lockdown* devido a pandemia - e o fato de que a maior parte dos respondentes da amostra não são residentes da cidade em que estudam, pois apenas `r casos_local_estudante[n-1]` (`r pct_casos_local_estudante[n-1]`) dos entrevistados residem na mesma cidade da universidade e/ou faculdade e a maioria, `r pct_casos_local_estudante[n]` (`r unname(casos_local_estudante[n-1])` casos) em outras cidades (Gráfico 9).  
 
 ```{r, grafico-9, echo=FALSE}
 #Gráfico 9: Procedência do aluno
@@ -374,52 +387,84 @@ pie(casos_local_estudante,
     main = "Gráfico 9: Procedência do aluno")
 ```
 
-Destes, 90% estavam na sua residência permanente durante a pandemia e 10% não.  
+```{r, grafico-10-prep-calc, echo=FALSE}
+# Dados do Gráfico 10 Aluno reside com quem?
+casos_aluno_mora_com <- sort(table(dbf.xlsx$morando_com, exclude = NULL))
+pct_aluno_mora_com <- paste(round(unname(casos_aluno_mora_com) / 
+                                    sum(unname(casos_aluno_mora_com)) * 100), "%")
+n = length(casos_aluno_mora_com)
+```
 
-Conforme demonstrado no Gráfico 9, dos respondentes, 69% moravam com a família, seguido de 25% morando sozinho e, em último ficaram os que residiam em república ou com colega de quarto (6%).  
-
-## Decisões tomadas, acesso à infraestrutura e aos docentes  
-Sobre a decisão de fechar o campus para evitar a circulação de pessoas e, consequentemente, evitar a circulação do vírus, como pode ser observado na figura do Gráfico 10, 77% dos pesquisados consideram a decisão tomada em momento oportuno, enquanto 13% consideram lenta a demora para a tomada de decisão e 10% definem como muito rápido.
+Conforme demonstrado no Gráfico 10, dos alunos respondentes, `r pct_aluno_mora_com[n]` moravam com a `r tolower(names(casos_aluno_mora_com[n]))`, seguido de `r pct_aluno_mora_com[n-1]` morando `r tolower(names(casos_aluno_mora_com[n-1]))` e, em último ficaram os que residiam com `r tolower(names(casos_aluno_mora_com[n-2]))` (`r pct_aluno_mora_com[n-2]`).  
 
 ```{r, grafico-10, echo=FALSE}
-# Dados do Gráfico 10
-casos_fechar_ies <- table(dbf.xlsx$decisao_fechar, exclude = NULL)
+#Gráfico 10: Aluno reside com quem?
+# Gráfico tipo "pizza"
+pie(casos_aluno_mora_com,
+    edges = 200, radius = 0.8,
+    clockwise = T,
+    density = NULL, angle = 90, col = c("orange", "blue", "red","black"),
+    labels = paste(names(casos_aluno_mora_com), "-", pct_aluno_mora_com),
+    main = "Gráfico 10: Tipo de moradia do aluno")
+```
+    
+Assim, podemos observar no Gráfico 10, que, do toral de respondentes `r paste0(as.numeric(substr(pct_aluno_mora_com[n], 1,2)) + as.numeric(substr(pct_aluno_mora_com[n-1], 1,2)), "%")` estavam na sua residência permanente durante a pandemia e `r paste0(as.numeric(substr(pct_aluno_mora_com[n-2], 1,2)), "%")` não.  
+
+## Decisões tomadas pelas IES, acesso à sua infraestrutura e aos docentes  
+
+```{r, grafico-11-pre-proc, echo=FALSE}
+# Dados do Gráfico 11
+casos_fechar_ies <- sort(table(dbf.xlsx$decisao_fechar, exclude = NULL))
 pct_fechar_ies <- paste(round(unname(casos_fechar_ies) / 
                                    sum(unname(casos_fechar_ies)) * 100), "%")
-#Gráfico 10: Fechar IES e utilizar ferramentas online
+n = length(casos_fechar_ies)
+```
+
+Sobre a decisão de fechar o campus para evitar a circulação de pessoas e, consequentemente, evitar a circulação do vírus entre a comunidade acadêmica de nível superior, na figura do Gráfico 11 nota-se que `r pct_fechar_ies[n]` dos pesquisados consideram as decisões tomadas pela IES `r tolower(names(casos_fechar_ies[n]))`, enquanto `r pct_fechar_ies[n-1]` consideram a tomada de decisão `r tolower(names(casos_fechar_ies[n-1]))` e `r pct_fechar_ies[n-2]` definem que as IES decidiram `r tolower(names(casos_fechar_ies[n-2]))`.
+
+```{r, grafico-11, echo=FALSE}
+#Gráfico 11: Fechar IES e utilizar ferramentas online
 # Gráfico tipo "pizza"
 pie(casos_fechar_ies,
     edges = 200, radius = 0.8,
     clockwise = F,
     density = NULL, angle = 90, col = c("red","blue", "gray","orange", "black", "white", "green"),
     labels = paste(names(casos_fechar_ies), "-", pct_fechar_ies),
-    main = "Gráfico 10: Decisão de fechar IES e utilizar ferramentas online")
+    main = "Gráfico 11: Decisão de fechar IES e utilizar ferramentas online")
 ```
 
-No que diz respeito à investigação se a Instituição de Nível Superior (IES) durante a pandemia transferiu todas suas atividades presenciais para o ensino remoto, apenas 2% dos alunos da amostra informaram que sua instituição não havia migrado para as aulas virtuais durante a pandemia, entretanto, 98% das IES da amostra se adaptaram de alguma forma para educação remota, como mostra o Grafico 11. 
-
-```{r, grafico-11, echo=FALSE}
-# Dados do Gráfico 11
+```{r, grafico-12-pre-proc, echo=FALSE}
+# Dados do Gráfico 12
 casos_migrou_virtual <- table(dbf.xlsx$migrou_virtual, exclude = NULL)
 pct_migrou_virtual <- paste(round(unname(casos_migrou_virtual) / 
                                   sum(unname(casos_migrou_virtual)) * 100), "%")
-#Gráfico 11: IES migrou virtual
+n <- length(casos_migrou_virtual)
+```
+
+No que diz respeito à investigação se a Instituição de Nível Superior (IES) durante a pandemia transferiu todas suas atividades presenciais para o ensino remoto, apenas `r pct_migrou_virtual[n-1]` dos alunos da amostra informaram que sua instituição não havia migrado para as aulas virtuais durante a pandemia. Constata-se, entretanto, que `r pct_migrou_virtual[n]` das IES da amostra se adaptaram de alguma forma para educação remota, como mostra o Grafico 12. 
+
+```{r, grafico-12, echo=FALSE}
+
+#Gráfico 12: IES migrou virtual
 # Gráfico tipo "pizza"
 pie(casos_migrou_virtual,
     edges = 200, radius = 0.8,
     clockwise = F,
     density = NULL, angle = 90, col = c("black", "orange", "blue"),
     labels = paste(names(casos_migrou_virtual), "-", pct_migrou_virtual),
-    main = "Gráfico 11: IES migrou para virtual")
+    main = "Gráfico 12: IES migrou para virtual")
 ```
-
-Já no tocante as formas de acesso aos recursos de infraestrutura oferecidos pela instituição (biblioteca, coordenação, orientação de assuntos acadêmicos, matrícula etc.) o Gráfico 12 mostra que, na opinião de 40% dos estudantes, o acesso aos recursos da IES pioraram durante a pandemia do COVID-19. Já 33% alegam que não houve mudanças. 
-
-```{r, grafico-12, echo=FALSE}
-# Dados do Gráfico 12
-casos_acesso_infra_ies <- table(dbf.xlsx$acesso_infra_ies, exclude = NULL)
+```{r, grafico-13-pre-proc, echo=FALSE}
+# Dados do Gráfico 13
+casos_acesso_infra_ies <- sort(table(dbf.xlsx$acesso_infra_ies, exclude = NULL))
 pct_acesso_infra_ies <- paste(round(unname(casos_acesso_infra_ies) / 
                                         sum(unname(casos_acesso_infra_ies)) * 100), "%")
+n <- length(casos_acesso_infra_ies)
+```
+
+Já no tocante as formas de acesso aos recursos de infraestrutura oferecidos pela instituição (biblioteca, coordenação, orientação de assuntos acadêmicos, matrícula etc.) o Gráfico 13 mostra que, na opinião de `r pct_acesso_infra_ies[n]` dos estudantes, o acesso aos recursos da IES `r tolower(names(casos_acesso_infra_ies[n]))` durante a pandemia do COVID-19. Já `r pct_acesso_infra_ies[n-1]` alegam que `r tolower(names(casos_acesso_infra_ies[n-1]))`. 
+
+```{r, grafico-13, echo=FALSE}
 #Gráfico 12: Acesso à infra-estrutura da IES
 # Gráfico tipo "pizza"
 pie(casos_acesso_infra_ies,
@@ -427,35 +472,43 @@ pie(casos_acesso_infra_ies,
     clockwise = F,
     density = NULL, angle = 90, col = c("gray", "orange", "blue", "red", "black", "white", "green"),
     labels = paste(names(casos_acesso_infra_ies), "-", pct_acesso_infra_ies),
-    main = "Gráfico 12: Acesso à infra-estrutura da IES")
+    main = "Gráfico 13: Acesso à infra-estrutura da IES")
 ```
 
-Os dados no Gráfico 12 indicam ainda que houve empate entre aqueles que alegam que houve melhorias e os que não sabem responder, ambos os lados representado 13% da amostra. 
+Os dados no Gráfico 13 indicam ainda que `r pct_acesso_infra_ies[n-2]` alegam que o acesso à infra-estrutura da IES `r tolower(names(casos_acesso_infra_ies[n-2]))`, e, finalmente, `r pct_acesso_infra_ies[n-3]` dos respondentes `r tolower(names(casos_acesso_infra_ies[n-3]))`. 
 
-Ao abordar o acesso ao corpo docente das IES durante a pandemia (Gráfico 13), a maioria dos respondentes sentiu que o acesso aos professores foi pior (52%) que antes da pandemia, seguido por aqueles que acharam que não houve grandes dificuldades de comunicação (25%). Para uma parcela menor (15%) a disponibilidade dos docentes melhorou e apenas 8% não souberam responder.
-
-```{r, grafico-13, echo=FALSE}
-# Dados do Gráfico 13
-casos_acesso_professores <- table(dbf.xlsx$acesso_professores, exclude = NULL)
+```{r, grafico-14-pre-proc, echo=FALSE}
+# Dados do Gráfico 14
+casos_acesso_professores <- sort(table(dbf.xlsx$acesso_professores, exclude = NULL))
 pct_acesso_professores <- paste(round(unname(casos_acesso_professores) / 
                            sum(unname(casos_acesso_professores)) * 100), "%")
-#Gráfico 13: Acesso aos professores na pandemia
+n <- length(casos_acesso_professores)
+```
+
+Ao abordar o acesso ao corpo docente das IES durante a pandemia (Gráfico 14), a maioria dos respondentes sentiu que o acesso aos professores `r tolower(names(casos_acesso_professores[n]))` (`r pct_acesso_infra_ies[n]`) comparado a antes da pandemia, seguido por aqueles que acharam que o contato `r tolower(names(casos_acesso_professores[n-1]))` (`r pct_acesso_infra_ies[n-1]`).  
+Para uma parcela menor (`r pct_acesso_infra_ies[n-2]`) a disponibilidade dos docentes `r tolower(names(casos_acesso_professores[n-2]))` durante a pandemia, outros `r pct_acesso_infra_ies[n-3]` julgam que o acesso aos docentes `r tolower(names(casos_acesso_professores[n-3]))` durante a pandemia e apenas `r pct_acesso_infra_ies[n-4]` não souberam responder.
+
+```{r, grafico-14, echo=FALSE}
+#Gráfico 14: Acesso aos professores na pandemia
 # Gráfico tipo "pizza"
 pie(casos_acesso_professores,
     edges = 200, radius = 0.8,
     clockwise = F,
     density = NULL, angle = 90, col = c("gray", "orange", "blue", "red", "black", "white", "green"),
     labels = paste(names(casos_acesso_professores), "-", pct_acesso_professores),
-    main = "Gráfico 13: Acesso aos professores na pandemia")
+    main = "Gráfico 14: Acesso aos professores na pandemia")
 ```
-
-Quando questionados sobre a forma como as aulas foram ministradas durante a pandemia, de acordo com figura do Gráfico 14, 48% dos participantes não sentiram nenhuma alteração. Entretanto, 42% afirmaram que as aulas ministradas no estilo remoto foram piores que pelo método presencial, 8% não souberam dizer e apenas 2% acharam que o ensino remoto foi melhor. 
-
-```{r, grafico-14, echo=FALSE}
-# Dados do Gráfico 25
-casos_aulas <- table(dbf.xlsx$aulas_durante_pandemia, exclude = NULL)
+```{r, grafico-15-pre-proc, echo=FALSE}
+# Dados do Gráfico 15
+casos_aulas <- sort(table(dbf.xlsx$aulas_durante_pandemia, exclude = NULL))
 pct_aulas <- paste(round(unname(casos_aulas) / 
                                sum(unname(casos_aulas)) * 100), "%")
+n <- length(casos_aulas)
+```
+
+Quando questionados sobre a forma como as aulas foram ministradas durante a pandemia, de acordo com figura do Gráfico 15, `r pct_aulas[n]` dos participantes opinaram que `r tolower(names(casos_aulas[n]))`. Por outro lado, `r pct_aulas[n-1]` afirmaram que a forma de ministrar as aulas no estilo remoto `r tolower(names(casos_aulas[n-1]))`, `r pct_aulas[n-2]` alegaram que as aulas `r tolower(names(casos_aulas[n-2]))` e `r pct_aulas[n-3]` `r tolower(names(casos_aulas[n-3]))`. 
+
+```{r, grafico-15, echo=FALSE}
 #Gráfico 14: Forma de ministrar as aulas
 # Gráfico tipo "pizza"
 pie(casos_aulas,
@@ -463,18 +516,22 @@ pie(casos_aulas,
     clockwise = F,
     density = NULL, angle = 90, col = c("gray", "orange", "blue", "red", "black", "white", "green"),
     labels = paste(names(casos_aulas), "-", pct_aulas),
-    main = "Gráfico 14: Forma de ministrar as aulas na pandemia")
+    main = "Gráfico 15: Modo de lecionar durante a pandemia")
 ```
 
-É interessante observar que, apesar de uma certa piora no acesso à infraestrutura e professores, grande parte dos estudantes não se sentiu afetado quanto à maneira como as aulas foram ministradas.  
-Após a vacinação e maior controle da pandemia, com dados coletados até o final de 2022, 60% dos entrevistados afirmaram que as universidades já haviam retomado as atividades de forma presencial nas IES, 29% haviam retornado em parte, 8% não haviam retomarado e 2% não sabiam informar (Gráfico 15). 
+É interessante observar na figura do Gráfico 15 que, apesar de uma certa piora no acesso à infraestrutura e professores, grande parte dos estudantes universitários que participaram da pesquisa não se sentiu afetado quanto à maneira como as aulas foram ministradas.
 
-```{r, grafico-15, echo=FALSE}
-# Dados do Gráfico 31
-casos_ies_reinicio <- table(dbf.xlsx$ies_reinicio, exclude = NULL)
-names(casos_ies_reinicio) <- c("Em parte", "N/A ou Não sabe", "Não retornou", "Retornou todas atividades")
+```{r, grafico-16-pre-proc, echo=FALSE}
+# Dados do Gráfico 16
+casos_ies_reinicio <- sort(table(dbf.xlsx$ies_reinicio, exclude = NULL))
 pct_ies_reinicio <- paste(round(unname(casos_ies_reinicio) / 
                                  sum(unname(casos_ies_reinicio)) * 100), "%")
+n <- length(casos_ies_reinicio)
+```
+
+Após a vacinação e maior controle da pandemia, com dados coletados do início da pandemia, em 2020 até o encerramento desta orimeira fase da coleta, em 2022, no Gráfico 16 observa-se que `r pct_ies_reinicio[n]` dos entrevistados afirmavam que as universidades já haviam retomado as atividades de forma presencial nas IES e `r pct_ies_reinicio[n-1]` haviam retornado em parte. 
+
+```{r, grafico-16, echo=FALSE}
 #Gráfico 15: IES reiniciou atividades presenciais
 # Gráfico tipo "pizza"
 pie(casos_ies_reinicio,
@@ -482,77 +539,98 @@ pie(casos_ies_reinicio,
     clockwise = F,
     density = NULL, angle = 90, col = c("gray",  "red", "blue","orange", "black", "white", "green"),
     labels = paste(names(casos_ies_reinicio), "-", pct_ies_reinicio),
-    main = "Gráfico 15: IES reiniciou atividades presenciais")
+    main = "Gráfico 16: IES reiniciou atividades presenciais")
 ```
 
-## Dificuldades enfrentadas pelos alunos
+## Dificuldades enfrentadas pelos alunos  
 
 Buscando compreender as principais dificuldades individuais que os alunos de ensino superior enfrentaram durante a pandemia, um conjunto de questões foram elaboradas no questionário para coletar informações sobre esforços que os estudantes tiveram que enfrentar para cursar as disciplinas remotamente.  
 Partindo da necessidade em utilizar a internet para as aulas, os alunos foram questionados quanto à qualidade do serviço de acesso à internet que tiveram que utilizar, comparando a antes e durante a pandemia da Covid-19.  
-De acordo com o Gráfico 16, 65% dos respondentes afirmaram que não houve nenhuma mudança, para 13% o acesso aos serviços de internet piorou e 19% sentiram que houve melhora. Apenas 2% não souberam responder.
-De modo geral, para os estudantes pesquisados o acesso a internet não mudou.
 
-```{r, grafico-16, echo=FALSE}
-# Dados do Gráfico 16
-casos_acesso_internet <- table(dbf.xlsx$acesso_internet, exclude = NULL)
+```{r, grafico-17-pre-proc, echo=FALSE}
+# Dados do Gráfico 17
+casos_acesso_internet <- sort(table(dbf.xlsx$acesso_internet, exclude = NULL))
 pct_acesso_internet <- paste(round(unname(casos_acesso_internet) / 
                                   sum(unname(casos_acesso_internet)) * 100), "%")
-#Gráfico 16: Acesso aos serviços de internet
+n <- length(casos_acesso_internet)
+```
+
+De acordo com o Gráfico 17, `r pct_acesso_internet[n]` dos respondentes afirmaram o acesso à internet que `r tolower(names(casos_acesso_internet[n]))`, para `r pct_acesso_internet[n-1]` o acesso aos serviços foi `r tolower(names(casos_acesso_internet[n-1]))` e `r pct_acesso_internet[n-2]` opinaram que os serviços ficaram `r tolower(names(casos_acesso_internet[n-2]))`.  
+De modo geral, para os estudantes pesquisados o acesso a internet não mudou.
+
+```{r, grafico-17, echo=FALSE}
+#Gráfico 17: Acesso aos serviços de internet
 # Gráfico tipo "pizza"
 pie(casos_acesso_internet,
     edges = 200, radius = 0.8,
-    clockwise = T,
+    clockwise = F,
     density = NULL, angle = 90, col = c("gray", "orange", "blue", "red","black", "white"),
     labels = paste(names(casos_acesso_internet), "-", pct_acesso_internet),
-    main = "Gráfico 16: Acesso aos serviços de internet")
+    main = "Gráfico 17: Acesso aos serviços de internet")
 ```
 
-No que concerne à mudança para o ensino virtual remoto e a mudança na forma de aprendizado, os dados do Gráfico 17 mostram que 38% dos participantes considera que não houve queda no seu desempenho escolar e 27% consideram que o seu desempenho acadêmico aumentou no ensino remoto, se comparado ao presencial.
-
-```{r, grafico-30, echo=FALSE}
-# Dados do Gráfico 17
-casos_performance <- table(dbf.xlsx$desempenho_escolar, exclude = NULL)
+```{r, grafico-18-pre-proc, echo=FALSE}
+# Dados do Gráfico 18
+casos_performance <- sort(table(dbf.xlsx$desempenho_escolar, exclude = NULL))
 pct_performance <- paste(round(unname(casos_performance) / 
                                 sum(unname(casos_performance)) * 100), "%")
-#Gráfico 17: Desempenho escolar
+n <- length(casos_performance)
+```
+
+No que concerne à mudança para o ensino virtual remoto e os possíveis impactos nodesempenho escolar do aluno, dada a mudança na forma de ensino, os dados do Gráfico 18 mostram que `r pct_performance[n]` dos participantes considera que seu desempenho escolar foi `r tolower(names(casos_performance[n]))`, `r pct_performance[n-1]` consideram que o seu desempenho `r tolower(names(casos_performance[n-1]))`, e `r pct_performance[n-2]` opinaram que seu rendimento escolar `r tolower(names(casos_performance[n-2]))` com o ensino remoto, se comparado ao ensino presencial.
+
+```{r, grafico-18, echo=FALSE}
+#Gráfico 18: Desempenho escolar
 # Gráfico tipo "pizza"
 pie(casos_performance,
     edges = 200, radius = 0.8,
     clockwise = F,
     density = NULL, angle = 90, col = c("gray",  "red", "blue","orange", "black", "white", "green"),
     labels = paste(names(casos_performance), "-", pct_performance),
-    main = "Gráfico 17: Desempenho escolar na pandemia")
+    main = "Gráfico 18: Desempenho escolar na pandemia")
 ```
 
-Entretanto, como também pode ser visualizado no Gráfico 17, 31% consideraram seu rendimento comprometido e 2% não souberam opinar.  
-Com as restrições sociais introduzidas durante o período de isolamento social, é importante também entender como a pandemia dificultou de forma abrangente a vida dos docentes. 
-Quando questionados diretamente quais os fatos vivenciados durante o período agudo da pandemia que os afetaram com intensidade, os alunos, de acordo com os dados do Gráfico 18, responderam que, que pelas orientações de distanciamento e fechamento dos serviços, tiveram dificuldades para se deslocar e/ou viajar (36%), além de necessitarem da ajuda de pessoas desconhecidas (8%), sentiram alguma discriminação por pessoas desconhecidas (2%) e que tais atribulações alteraram suas condições de vida (17%) . 
+Observa-se nos resultados compilados no no Gráfico 18, que quanto a este quesito, as opiniões ficaram bastante divididas e apenas `r pct_performance[n-2]` não souberam opinar.  
+Com as restrições sociais introduzidas durante o período de isolamento social, é importante também buscar entender como a pandemia dificultou de forma abrangente a vida dos docentes. 
 
-```{r, grafico-18, echo=FALSE}
-# Dados do Gráfico 18
-casos_aluno_vivenciou <- table(dbf.xlsx$vivenciou, exclude = NULL)
-names(casos_aluno_vivenciou) <- c("Ajuda/assistência pessoas desconhecidas", "Alterações nas condições de vida", 
-                                  "Dificuldade viajar/se deslocar", "Discriminação por desconhecidos", "Não se aplica")
+```{r, grafico-19-pre-proc, echo=FALSE}
+# Dados do Gráfico 19
+casos_aluno_vivenciou <- sort(table(dbf.xlsx$vivenciou, exclude = NULL))
+names(casos_aluno_vivenciou) <- c("Discriminação por desconhecidos", "Ajuda/assistência de desconhecidos", 
+                                  "Alterações nas condições de vida", "Não se aplica",
+                                  "Dificuldade se deslocar/viajar")
 pct_aluno_vivenciou <- paste(round(unname(casos_aluno_vivenciou) / 
-                                           sum(unname(casos_aluno_vivenciou)) * 100), "%")
-#Gráfico 18: Dificuldades vividas pelo aluno
+                                     sum(unname(casos_aluno_vivenciou)) * 100), "%")
+n = length(casos_aluno_vivenciou) 
+```
+
+Quando questionados diretamente quais os principais fatos vivenciados durante o período agudo da pandemia que os afetaram com intensidade, os alunos, de acordo com os dados compilados e mostrados no Gráfico 19, responderam que, que pelas orientações de distanciamento e fechamento dos serviços, tiveram `r tolower(names(casos_aluno_vivenciou[n]))` (`r pct_aluno_vivenciou[n]`), além de `r tolower(names(casos_aluno_vivenciou[n-2]))` (`r pct_aluno_vivenciou[n-2]`) e necessitaram de `r tolower(names(casos_aluno_vivenciou[n-3]))` (`r pct_aluno_vivenciou[n-3]`).    
+Entretanto, para `r pct_aluno_vivenciou[n-1]` dos respondentes, tais atribulações não tiveram impacto ou não souberam ou quiseram responder.  
+
+```{r, grafico-19, echo=FALSE}
+#Gráfico 19: Dificuldades vividas pelo aluno
 # Gráfico tipo "pizza"
 pie(casos_aluno_vivenciou,
     edges = 200, radius = 0.8,
-    clockwise = T,
+    clockwise = F,
     density = NULL, angle = 90, col = c("gray", "orange", "blue", "red","black"),
     labels = paste(names(casos_aluno_vivenciou), "-", pct_aluno_vivenciou),
-    main = "Gráfico 18: Dificuldades vividas pelo aluno")
+    main = "Gráfico 19: Dificuldades vividas pelo aluno")
 ```
 
-Além das dificuldades apontadas nos dados do Gráfico 18, dada as restrições sociais a vida financeira dos discentes também foi afetada de 
-maneira importante. Os dados compilados no Gráfico 19 ilustram a opiniãodos alunos em relação aos seus gastos durante o a pandemia onde 40% alegam que as despesas não sofreram alteração, 33% que houve incremento nas suas despesas e 27% tiveram redução.
+Além das dificuldades apontadas nos dados do Gráfico 19, dada as restrições sociais a vida financeira dos discentes também foi afetada de formaa importante. 
 
-```{r, grafico-34, echo=FALSE}
-# Dados do Gráfico 19
-casos_despesas <- table(dbf.xlsx$despesas, exclude = NULL)
+```{r, grafico-20-pre-proc, echo=FALSE}
+# Dados do Gráfico 20
+casos_despesas <- sort(table(dbf.xlsx$despesas, exclude = NULL))
 pct_despesas <- paste(round(unname(casos_despesas) / 
                               sum(unname(casos_despesas)) * 100), "%")
+n = length(casos_despesas)
+```
+
+Os dados compilados no Gráfico 20 ilustram a percepção dos alunos da amostra em relação aos seus gastos durante o a pandemia onde `r pct_despesas[n]` alegam que as despesas `r tolower(names(casos_despesas[n]))`, `r pct_despesas[n-1]` opinaram que suas despesas `r tolower(names(casos_despesas[n-1]))` enquanto que `r pct_despesas[n-2]` consideraram que estas `r tolower(names(casos_despesas[n-2]))`.  
+
+```{r, grafico-20, echo=FALSE}
 #Gráfico 19: Despesas durante a pandemia
 # Gráfico tipo "pizza"
 pie(casos_despesas,
@@ -560,68 +638,82 @@ pie(casos_despesas,
     clockwise = F,
     density = NULL, angle = 90, col = c("red","gray", "blue","orange", "black", "white", "green"),
     labels = paste(names(casos_despesas), "-", pct_despesas),
-    main = "Gráfico 19: Despesas durante a pandemia")
+    main = "Gráfico 20: Gastos durante a pandemia")
 ```
 
-Apesar da maioria dos entrevistados não terem sofrido com o aumento de despesas, já com relação ao seu poder de compra observamos no Gráfico 20 que 48% observaram uma queda no seu poder de compra e 44% consideram que sua renda continuou mais ou menos a mesma. 
-
-```{r, grafico-20, echo=FALSE}
-# Dados do Gráfico 20
-casos_renda <- table(dbf.xlsx$renda_financeira, exclude = NULL)
+```{r, grafico-21-pre-proc, echo=FALSE}
+# Dados do Gráfico 21
+casos_renda <- sort(table(dbf.xlsx$renda_financeira, exclude = NULL))
 pct_renda <- paste(round(unname(casos_renda) / 
                               sum(unname(casos_renda)) * 100), "%")
-#Gráfico 35: Renda durante a pandemia
+
+n=length(casos_renda)
+```
+
+Nos dados do Gráfico 20, observamos que grande parte dos entrevistados sofreram com aumento de despesas durante a pandemia.  
+Outro informação interessante a ser observada nos dados compilados, é a questão do poder de compra dos alunos. No figura do Gráfico 21, `r pct_renda[n]` dos discentes participantes consideraram que a sua renda continuou relativamente a mesma durante a pandemia 
+Já `r pct_renda[n-1]` dos alunos consideram que sua renda diminuiu. Apenas `r pct_renda[n-1]` consideraram que a sua renda aumentou.
+
+```{r, grafico-21, echo=FALSE}
+#Gráfico 21: Renda durante a pandemia
 # Gráfico tipo "pizza"
 pie(casos_renda,
     edges = 200, radius = 0.8,
     clockwise = F,
     density = NULL, angle = 90, col = c("gray", "red", "blue","orange", "black", "white", "green"),
     labels = paste(names(casos_renda), "-", pct_renda),
-    main = "Gráfico 20: Renda durante a pandemia")
+    main = "Gráfico 21: Renda durante a pandemia")
 ```
-  
-Como pode ser observado no Gráfico 20, apenas 6% tiveram aumento nos rendimentos e 2% não quiseram e/ou souberam opinar. 
 
-Ainda que muitas universidades públicas ofereçam auxílio financeiro para que estudantes possam morar no campus (ou próximo de) para estudarem, de acordo com os dados do Gráfico 21 observa-se que durante o período de pandemia 85% dos entrevistados não tiveram nenhum respaldo por parte da instituição educacional ou de outra organização. 
 
-```{r, grafico-21, echo=FALSE}
-# Dados do Gráfico 21
+```{r, grafico-22-pre-proc, echo=FALSE} 
+# Dados do Gráfico 22
 casos_ajuda <- table(dbf.xlsx$ajuda_financeira, exclude = NULL)
 pct_ajuda <- paste(round(unname(casos_ajuda) / 
                            sum(unname(casos_ajuda)) * 100), "%")
-#Gráfico 21: Recebeu auxílio financeiro da IES
+n = length(casos_ajuda)
+```
+
+Ainda que muitas universidades públicas ofereçam auxílio financeiro para que os estudantes possam residir no campus (ou próximo de) para estudar, de acordo com os dados do Gráfico 22 observa-se que durante o período de pandemia, `r pct_ajuda[n]` dos entrevistados não fruíram nenhum respaldo por parte da instituição educacional ou de outra organização. 
+
+```{r, grafico-22, echo=FALSE}
+#Gráfico 22: Recebeu auxílio financeiro da IES
 # Gráfico tipo "pizza"
 pie(casos_ajuda,
     edges = 200, radius = 0.8,
     clockwise = F,
     density = NULL, angle = 90, col = c("red","blue", "gray","orange", "black", "white", "green"),
     labels = paste(names(casos_ajuda), "-", pct_ajuda),
-    main = "Gráfico 21: Recebeu auxílio financeiro da IES")
+    main = "Gráfico 22: Recebeu auxílio financeiro da IES")
 ```
 
-Quanto ao nível de endividamento durante a pandemia, os estudantes afirmaram que 69% não tiveram alteração nos seus débitos, como é possível observar no Gráfico 22.
 
-```{r, grafico-22, echo=FALSE}
-# Dados do Gráfico 22
+```{r, grafico-23-pre-proc, echo=FALSE}
+# Dados do Gráfico 23
 casos_endividamento <- table(dbf.xlsx$nivel_endividamento, exclude = NULL)
 pct_endividamento <- paste(round(unname(casos_endividamento) / 
                            sum(unname(casos_endividamento)) * 100), "%")
-#Gráfico 22: Dívidas durante pandemia
+n = length(casos_endividamento)
+```
+
+Quanto ao nível de endividamento durante a pandemia, `r pct_endividamento[n]` dos estudantes afirmaram que seu nível de endividamento `r tolower(names(casos_endividamento[n]))`, como é possível observar no Gráfico 23.
+
+```{r, grafico-23, echo=FALSE}
+#Gráfico 23: Dívidas durante pandemia
 # Gráfico tipo "pizza"
 pie(casos_endividamento,
     edges = 200, radius = 0.8,
     clockwise = F,
     density = NULL, angle = 90, col = c("red","blue", "gray","orange", "black", "white", "green"),
     labels = paste(names(casos_endividamento), "-", pct_endividamento),
-    main = "Gráfico 22: Dívidas durante a pandemia")
+    main = "Gráfico 23: Dívidas durante a pandemia")
 ```
 
-Já 13% afirmaram ter aumentado o seu nível de endividamento, 12% uma diminuição, e 6% não souberam informar, como ilustram os dados no Gráfico 22. 
-Pensando em um cenário "pós-pandêmico" (após o pico da pandemia 2020/2022), foi solicitado aos participantes manifestar quais gastos realizados por cada estudante que cresceram em diversos segmentos. 
-Nesta questão de resposta múltipla os respondentes poderiam indicar mais de um segmento concomitantemente. Os dados compilados das respostas estão ilustrados no Gráfico 23.  
+Já `r pct_endividamento[n-1]` afirmaram que o seu nível de endividamento `r tolower(names(casos_endividamento[n-1]))` e `r pct_endividamento[n-2]` que `r tolower(names(casos_endividamento[n-2]))`. Dos dados compilados neste quesito, apenas  `r pct_endividamento[n-2] não souberam informar, como ilustra o Gráfico 22. 
+Pensando em um cenário "pós-pandêmico" (após o pico da pandemia 2020/2022), foi solicitado aos alunos participantes da pesquisa se manifestar em quais dos seus gastos realizados durante a pandemia apontaram crescimento. No questionário foram relacionados para tanto alguns segmentos específicos para escolha do respondente.  
 
-```{r, grafico-23, echo=FALSE}
-## Gráfico 23 
+```{r grafico-24-pre-proc, echo=FALSE}
+## Gráfico 24 
 # Descobrindo as ocorrências
 if(!("stringr") %in% installed.packages()) install.packages("stringr")
 library(stringr)
@@ -634,12 +726,23 @@ internet <- length(na.omit(str_match(perfil_despesas, "Internet")))
 alimentacao <- length(na.omit(str_match(perfil_despesas, "Alimentação")))  
 outras <- length(na.omit(str_match(perfil_despesas, "Outras")))
 casos_perfil_despesas <- c(relacionadas_saude, viagens_deslocamentos, transporte_urbano, aluguel, internet, alimentacao, outras)
+# Colocando nomes com strings menores para caber no gráfico de barras
 names(casos_perfil_despesas) <- c("Relac. saúde", "Deslocamento", "Transp. urbano", 
                                   "Aluguel", "Internet", "Alimentação", "Outras")
+# colocando as despesas já nomeadas em ordem crescente
+casos_perfil_despesas <- sort(casos_perfil_despesas)
+# calculando os percentuias já com o símbolo % 
 pct_perfil_despesas <- paste0(round(unname(casos_perfil_despesas) / sum(unname(casos_perfil_despesas)) * 100,0), "%")
-# Gráfico do tipo barras
+# definindo o número de ocorrências
+n = length(casos_perfil_despesas)
+```
+
+Portanto, nesta questão de múltipla escolha os respondentes poderiam indicar mais de um segmento simultaneamente. Os dados compilados das respostas estão ilustrados no Gráfico 24.  
+
+```{r, grafico-24, echo=FALSE}
+# Gráfico 23 do tipo barras
 graph.perfil.despesas <- barplot(casos_perfil_despesas, 
-                       main = "Gráfico 23: Despesas que cresceram na pandemia",
+                       main = "Gráfico 24: Despesas que cresceram na pandemia",
                        xlab = "Despesas", 
                        ylab = "Quantidade",
                        col = "orange",
@@ -648,26 +751,18 @@ text(x = graph.perfil.despesas, y = casos_perfil_despesas, label = unname(casos_
 axis(1, at=graph.perfil.despesas, labels=paste("(", pct_perfil_despesas, ")"), tick=F, las=1, line=-1.0, cex.axis= 1.1)      
 ```
 
-Dentre os gastos citados pelos respondentes pós pandemia e agrupados na figura do Gráfico 22, observa-se que o maior crescimento apontado foi com alimentação (25%), seguido pelo transporte urbano (15%) e deslocamento (14%). 
-Levando em consideração que, em sua maioria, os entrevistados tiveram que retomar pelo menos parcialmente ou de forma híbrida para seu trabalho e faculdade, tais despesas justificam ser os itens mais sinalizados.  
+Dentre os gastos citados pelos respondentes pós pandemia e agrupados na figura do Gráfico 24, observa-se que o maior crescimento apontado foi com `r tolower(names(casos_perfil_despesas[n]))` (`r pct_perfil_despesas[n]`) com `r unname (casos_perfil_despesas)[n]` casos, seguido por `r tolower(names(casos_perfil_despesas[n-1]))`, com `r pct_perfil_despesas[n-1]`, e `r tolower(names(casos_perfil_despesas[n-2]))`, com `r pct_perfil_despesas[n-2]`. 
+Levando em consideração que, em sua maioria, os entrevistados tiveram que retomar pelo menos parcialmente ou de forma híbrida para seu trabalho e faculdade, tais despesas justificam ser os itens mais sinalizados.
+Demais despesas apontadas, tais como `r tolower(names(casos_perfil_despesas[n-3]))` responderam com `r pct_perfil_despesas[n-3]`, `r tolower(names(casos_perfil_despesas[n-4]))` resultaram em `r pct_perfil_despesas[n-4]` representaram um impacto menor nos alunos questionados.  
 
 ## Análise qualitativa
 Questões com gráfico de chuvas de palavras!
-Como agregar e analisá-las ?
+Questões com interpretações em aberto !!
+Como agregar e analisá-las ? Utilizando-se "análise de conteúdo"?
 
-```{r, grafico-24, echo=FALSE}
-# Gráfico 23: situacao_durante-pandemia
+```{r, grafico-25-pre-proc, echo=FALSE, warning = FALSE, message = FALSE}
+# Gráfico 25: situacao_durante-pandemia
 # Nuvem de palavras
-
-#Load the packages
-if(!"wordcloud" %in% installed.packages()) install.packages("wordcloud")
-library(wordcloud)
-if(!"wordcloud2" %in% installed.packages()) install.packages("wordcloud2")
-library(wordcloud2)
-if(!"RColorBrewer" %in% installed.packages()) install.packages("RColorBrewer")
-library(RColorBrewer)
-if(!"tm" %in% installed.packages()) install.packages("tm")
-library(tm)
 
 #Carregando o texto e eliminando os NA (missing data)
 texto <- na.omit(dbf.xlsx$situação_durante_pandemia)
@@ -676,9 +771,6 @@ texto <- na.omit(dbf.xlsx$situação_durante_pandemia)
 docs <- Corpus(VectorSource(texto))
 
 # Limpando o texto
-# Para utilizar o comando "pipe" (%>%) ou operador "tee pipe" (%T>%) , pode-se "carregar" o pacote magrittr
-if(!"magrittr" %in% installed.packages()) install.packages("magrittr")
-library(magrittr)
 docs <- docs %>%
   tm_map(removeNumbers) %>%
   tm_map(removePunctuation) %>%
@@ -693,21 +785,24 @@ dtm <- TermDocumentMatrix(docs)
 matrix <- as.matrix(dtm) 
 words <- sort(rowSums(matrix),decreasing=TRUE) 
 df <- data.frame(word = names(words),freq=words)
+```
 
+```{r grafico-25, echo=F, warning = FALSE, message = FALSE}
 # Gerar a núvem de palavras
 set.seed(1234) # para reprodutibilidade 
 wordcloud(words = df$word, freq = df$freq, min.freq = 1, # menor "min.freq", maior/precisão, menor número/palavras     
           max.words=200, random.order=FALSE, rot.per=0.35,       
           colors=brewer.pal(8, "Dark2"))
-mtext("Gráfico 24: Situação durante a pandemia", side=3, line = 3)
+mtext("Gráfico 25: Manifestação sobre a sua situação durante a pandemia", side=3, line = 3)
 print("Principais ocorrências de palavras em situação durante a pandemia")
 for (k in 1:length (which(pmax(df$freq) > 2))) {
   print(paste(df$word[k], df$freq[k],sep = " = " ))
 }
 ```
 
-```{r, grafico-25, echo=FALSE}
-#Gráfico 24: Qualidade de vida
+
+```{r, grafico-26-pre-proc, echo=FALSE, warning = FALSE, message = FALSE}
+#Gráfico 26: Qualidade de vida
 #Carregando o texto e eliminando os NA (missing data)
 texto <- na.omit(dbf.xlsx$qualidade_de_vida)
 # Criando um corpus  
@@ -724,23 +819,26 @@ dtm <- TermDocumentMatrix(docs)
 matrix <- as.matrix(dtm) 
 words <- sort(rowSums(matrix),decreasing=TRUE) 
 df <- data.frame(word = names(words),freq=words)
+```
+
+```{r, grafico-26, echo=FALSE, warning = FALSE, message = FALSE}
 # Gerar a núvem de palavras
 set.seed(1234) # para reprodutibilidade 
 wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
           max.words=200, random.order=FALSE, rot.per=0.35,       
           colors=brewer.pal(8, "Dark2"))
-mtext("Gráfico 25: Qualidade de vida", side=3, line = 3)
+mtext("Gráfico 26: Manifestação sobre a sua qualidade de vida", side=3, line = 3)
 print("Principais ocorrências de palavras em qualidade de vida")
 for (k in 1:length (which(pmax(df$freq) > 2))) {
   print(paste(df$word[k], df$freq[k],sep = " = " ))
-  }
+}
 ```
 
 ### -----------------------------------------------------------
 ### Gráficos opinando com relação às ações tomadas pela IES  
 
-```{r, grafico-26, echo=FALSE}
-#Gráfico 41: IES fez de positivo na pandemia
+```{r, grafico-27-pre-proc, echo=FALSE, warning = FALSE, message = FALSE}
+#Gráfico 27: IES fez de positivo na pandemia
 #Carregando o texto e eliminando os NA (missing data)
 texto <- na.omit(dbf.xlsx$ies_positivo)
 # Criando um corpus  
@@ -757,20 +855,24 @@ dtm <- TermDocumentMatrix(docs)
 matrix <- as.matrix(dtm) 
 words <- sort(rowSums(matrix),decreasing=TRUE) 
 df <- data.frame(word = names(words),freq=words)
+```
+
+
+```{r, grafico-27, echo=FALSE, warning = FALSE, message = FALSE}
 # Gerar a núvem de palavras
 set.seed(1234) # para reprodutibilidade 
 wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
           max.words=200, random.order=FALSE, rot.per=0.35,       
           colors=brewer.pal(8, "Dark2"))
-mtext("Gráfico 26: IES fez de positivo na pandemia", side=3, line = 3)
+mtext("Gráfico 27: O que a IES fez de positivo na pandemia", side=3, line = 3)
 print("Principais ocorrências de palavras do que a IES fez de positivo na pandemia")
 for (k in 1:length (which(pmax(df$freq) > 2))) {
      print(paste(df$word[k], df$freq[k],sep = " = " ))
 }
 ```
 
-```{r, grafico-27, echo=FALSE}
-#Gráfico 42: IES poderia melhorar na pandemia
+```{r, grafico-28-pre-proc, echo=FALSE, warning = FALSE, message = FALSE}
+#Gráfico 28: IES poderia melhorar na pandemia
 #Carregando o texto e eliminando os NA (missing data)
 texto <- na.omit(dbf.xlsx$ies_melhorar)
 # Criando um corpus  
@@ -787,20 +889,23 @@ dtm <- TermDocumentMatrix(docs)
 matrix <- as.matrix(dtm) 
 words <- sort(rowSums(matrix),decreasing=TRUE) 
 df <- data.frame(word = names(words),freq=words)
+```
+
+```{r, grafico-28, echo=FALSE, warning = FALSE, message = FALSE}
 # Gerar a núvem de palavras
 set.seed(1234) # para reprodutibilidade 
 wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
           max.words=200, random.order=FALSE, rot.per=0.35,       
           colors=brewer.pal(8, "Dark2"))
-mtext("Gráfico 27: IES poderia melhorar na pandemia", side=3, line = 3)
+mtext("Gráfico 28: O que a IES poderia melhorar na pandemia", side=3, line = 3)
 print("Principais ocorrências de palavras do que a IES poderia melhorar na pandemia")
 for (k in 1:length (which(pmax(df$freq) > 2))) {
   print(paste(df$word[k], df$freq[k],sep = " = " ))
 }
 ```
 
-```{r, grafico-28, echo=FALSE}
-#Gráfico 43: IES poderia melhor ajudar na pandemia
+```{r, grafico-29-pre-proc, echo=FALSE, warning = FALSE, message = FALSE}
+#Gráfico 29: IES poderia melhor ajudar na pandemia
 #Carregando o texto e eliminando os NA (missing data)
 texto <- na.omit(dbf.xlsx$ies_ajudar)
 # Criando um corpus  
@@ -817,23 +922,27 @@ dtm <- TermDocumentMatrix(docs)
 matrix <- as.matrix(dtm) 
 words <- sort(rowSums(matrix),decreasing=TRUE) 
 df <- data.frame(word = names(words),freq=words)
+```
+
+```{r, grafico-29, echo=FALSE, warning = FALSE, message = FALSE}
 # Gerar a núvem de palavras
 set.seed(1234) # para reprodutibilidade 
 wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
           max.words=200, random.order=FALSE, rot.per=0.35,       
           colors=brewer.pal(8, "Dark2"))
-mtext("Gráfico 28: IES poderia melhor ajudar na pandemia", side=3, line = 3)
+mtext("Gráfico 29: Em que a IES poderia melhor ajudar na pandemia", side=3, line = 3)
 print("Principais ocorrências de palavras do que a IES poderia melhora ajudar na pandemia")
 for (k in 1:length (which(pmax(df$freq) > 2))) {
   print(paste(df$word[k], df$freq[k],sep = " = " ))
 }
 ```
 
+
 ## ------------------------------------------------------
 ## Gráficos avaliando a situação psicológica dos alunos
 
 
-```{r, grafico-nono, echo=FALSE}
+```{r, grafico-30, echo=FALSE}
 # Dados do Gráfico 30
 casos_prosseguir_estudos <- table(dbf.xlsx$capacidade_prosseguir_estudos, exclude = NULL)
 pct_prosseguir_estudos <- paste(round(unname(casos_prosseguir_estudos) / 
@@ -848,7 +957,7 @@ pie(casos_prosseguir_estudos,
     main = "Gráfico 30: Capacidade para prosseguir ou concluir estudos")
 ```
 
-```{r, grafico-xoxo, echo=FALSE}
+```{r, grafico-31, echo=FALSE}
 # Dados do Gráfico 31
 casos_socializacao <- table(dbf.xlsx$capacidade_socializacao, exclude = NULL)
 pct_socializacao <- paste(round(unname(casos_socializacao) / 
@@ -863,7 +972,7 @@ pie(casos_socializacao,
     main = "Gráfico 31: Capacidade de socialização")
 ```
 
-```{r, grafico-yoyo, echo=FALSE}
+```{r, grafico-32, echo=FALSE}
 # Dados do Gráfico 32
 casos_bem_estar <- table(dbf.xlsx$bem_estar_psicologico, exclude = NULL)
 pct_bem_estar <- paste(round(unname(casos_bem_estar) / 
@@ -880,7 +989,7 @@ pie(casos_bem_estar,
 ```
 
 
-```{r, grafico-zaza, echo=FALSE}
+```{r, grafico-33, echo=FALSE}
 # Dados do Gráfico 33
 casos_espaco_fisico <- table(dbf.xlsx$espaco_físico, exclude = NULL)
 pct_espaco_fisico <- paste(round(unname(casos_espaco_fisico) / 
@@ -895,7 +1004,7 @@ pie(casos_espaco_fisico,
     main = "Gráfico 33: Espaço físico utilizado para atividades escolares")
 ```
 
-```{r, grafico-mana, echo=FALSE}
+```{r, grafico-34, echo=FALSE}
 # Dados do Gráfico 34
 casos_disposicao <- table(dbf.xlsx$disposicao_atividades, exclude = NULL)
 pct_disposicao <- paste(round(unname(casos_disposicao) / 
@@ -911,7 +1020,7 @@ pie(casos_disposicao,
 ```
 
 
-```{r, grafico-mona, echo=FALSE}
+```{r, grafico-35, echo=FALSE}
 # Dados do Gráfico 35
 casos_ansiedade <- table(dbf.xlsx$nivel_ansiedade, exclude = NULL)
 pct_aniedade <- paste(round(unname(casos_ansiedade) / 
@@ -926,7 +1035,7 @@ pie(casos_ansiedade,
     main = "Gráfico 35:  Nível de ansiedade quanto ao futuro")
 ```
 
-```{r, grafico-zumba, echo=FALSE}
+```{r, grafico-36, echo=FALSE}
 # Dados do Gráfico 36
 casos_ansiedade_planejamento <- table(dbf.xlsx$ansiedade_planejamento, exclude = NULL)
 pct_ansiedade_planejamento <- paste(round(unname(casos_ansiedade_planejamento) / 
@@ -941,7 +1050,7 @@ pie(casos_ansiedade_planejamento,
     main = "Gráfico 36: Nível de ansiedade para planejamento pessoal")
 ```
 
-```{r, grafico-cuca, echo=FALSE}
+```{r, grafico-37, echo=FALSE}
 # Dados do Gráfico 37
 casos_ansiedade_longo <- table(dbf.xlsx$ansiedade_longo_prazo, exclude = NULL)
 pct_ansiedade_longo <- paste(round(unname(casos_ansiedade_longo) / 
@@ -960,7 +1069,7 @@ pie(casos_ansiedade_longo,
 ## --------------------------------------------------
 ## Opinião dos alunos sobre as dificuldades - principais palavras utilizadas
 
-```{r, grafico-38, echo=FALSE}
+```{r, grafico-38, echo=FALSE, warning=FALSE, error=FALSE}
 #Gráfico 38: Dificuldades financeiras durante a pandemia
 #Carregando o texto e eliminando os NA (missing data)
 texto <- na.omit(dbf.xlsx$dificuldades_financeiras)
@@ -991,7 +1100,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 ```
 
 
-```{r, grafico-sobrou, echo=FALSE}
+```{r, grafico-39, echo=FALSE, error=FALSE, warning=FALSE}
 #Gráfico 39: Dificuldades acadêmicas durante a pandelia
 #Carregando o texto e eliminando os NA (missing data)
 texto <- na.omit(dbf.xlsx$dificuldades_academicas)
@@ -1022,7 +1131,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 ```
 
 
-```{r, grafico-40, echo=FALSE}
+```{r, grafico-40, echo=FALSE, warning=FALSE, error=FALSE}
 #Gráfico 40: Comentários finais
 #Carregando o texto e eliminando os NA (missing data)
 texto <- na.omit(dbf.xlsx$detalhes_finais)
@@ -1060,19 +1169,19 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 ## Sobras ?
 
 
-```{r, grafico-nana, echo=FALSE}
-# Dados do Gráfico 19
+```{r, grafico-41, echo=FALSE}
+# Dados do Gráfico 41
 casos_acesso_saude <- table(dbf.xlsx$acesso_servicos_saude, exclude = NULL)
 pct_acesso_saude <- paste(round(unname(casos_acesso_saude) / 
                                      sum(unname(casos_acesso_saude)) * 100), "%")
-#Gráfico 19: Acesso aos serviços de saude
+#Gráfico 41: Acesso aos serviços de saude
 # Gráfico tipo "pizza"
 pie(casos_acesso_saude,
     edges = 200, radius = 0.8,
     clockwise = T,
     density = NULL, angle = 90, col = c("gray", "orange", "blue", "red","black"),
     labels = paste(names(casos_acesso_saude), "-", pct_acesso_saude),
-    main = "Gráfico ?: Acesso aos serviços de saude")
+    main = "Gráfico 41: Acesso aos serviços de saude")
 ```
 
 ## Resultados e Discussão  

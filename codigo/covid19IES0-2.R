@@ -6,15 +6,15 @@
 # Lendo o arquivo em .xlsx
 if (!("readxl") %in% installed.packages()) install.packages("readxl")
 library(readxl)
-dbf.xlsx <- read_excel("./dados/COVID-19-E-IES-2023-2.xlsx")
+dbf.xlsx <- read_excel("./dados/COVID-19-E-IES-2023.xlsx")
 
 # Lendo o arquivo em .csv
-dbf.csv <-read.csv("./dados/COVID-19-E-IES-2023-2.csv", header = TRUE, sep = ";", quote = "\"", dec = ".")
+dbf.csv <-read.csv("./dados/COVID-19-E-IES-2023.csv", header = TRUE, sep = ";", quote = "\"", dec = ".")
 
 # Lendo o arquivo em .ods
 if (!("readODS") %in% installed.packages()) install.packages("readODS")
 library(readODS)
-dbf.ods <- read_ods("./dados/COVID-19-E-IES-2023-2.ods")
+dbf.ods <- read_ods("./dados/COVID-19-E-IES-2023.ods")
 
 # Utilizando o pacote smartEDA no dataframe
 if(!("SmartEDA") %in% installed.packages()) install.packages("SmartEDA")
@@ -368,7 +368,7 @@ unname(casos_local_estudante)[n]
 pct_casos_local_estudante[n]
 #[1] "66 %"
 
-#Gráfico 9: Aluno reside com quem
+#Gráfico 10: Aluno reside com quem
 # Aluno é da cidade da IES ou fora?
 # Gráfico tipo "pizza"
 pie(casos_local_estudante,
@@ -400,3 +400,719 @@ pie(casos_aluno_mora_com,
     density = NULL, angle = 90, col = c("orange", "blue", "red","black"),
     labels = paste(names(casos_aluno_mora_com), "-", pct_aluno_mora_com),
     main = "Gráfico 9: Aluno mora com/em")
+
+# Dados do Gráfico 11
+casos_fechar_ies <- sort(table(dbf.xlsx$decisao_fechar, exclude = NULL))
+pct_fechar_ies <- paste(round(unname(casos_fechar_ies) / 
+                                sum(unname(casos_fechar_ies)) * 100), "%")
+pct_fechar_ies
+# [1] "13 %" "14 %" "74 %"
+
+n = length(casos_fechar_ies)
+n
+# [1] 3
+
+#Gráfico 11: Fechar IES e utilizar ferramentas online
+# Gráfico tipo "pizza"
+pie(casos_fechar_ies,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("red","blue", "gray","orange", "black", "white", "green"),
+    labels = paste(names(casos_fechar_ies), "-", pct_fechar_ies),
+    main = "Gráfico 11: Decisão de fechar IES e utilizar ferramentas online")
+
+# Dados do Gráfico 12
+casos_migrou_virtual <- sort(table(dbf.xlsx$migrou_virtual, exclude = NULL))
+casos_migrou_virtual
+# Não Sim 
+#   1  86
+pct_migrou_virtual <- paste(round(unname(casos_migrou_virtual) / 
+                                    sum(unname(casos_migrou_virtual)) * 100), "%")
+pct_migrou_virtual
+# [1] "1 %"  "99 %"
+n <- length(casos_migrou_virtual)
+n
+# [1] 2
+
+# Dados do Gráfico 12
+casos_acesso_infra_ies <- sort(table(dbf.xlsx$acesso_infra_ies, exclude = NULL))
+casos_acesso_infra_ies
+#            N/A ou Não sabe                    Melhorou Ficou mais ou menos o mesmo 
+#                         10                          11                          30 
+#                     Piorou 
+#                         36 
+
+pct_acesso_infra_ies <- paste(round(unname(casos_acesso_infra_ies) / 
+                                      sum(unname(casos_acesso_infra_ies)) * 100), "%")
+pct_acesso_infra_ies
+#[1] "11 %" "13 %" "34 %" "41 %"
+
+n <- length(casos_acesso_infra_ies)
+n
+# [1] 4
+
+#Gráfico 12: Acesso à infra-estrutura da IES
+# Gráfico tipo "pizza"
+pie(casos_acesso_infra_ies,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray", "orange", "blue", "red", "black", "white", "green"),
+    labels = paste(names(casos_acesso_infra_ies), "-", pct_acesso_infra_ies),
+    main = "Gráfico 12: Acesso à infra-estrutura da IES")
+
+# Dados do Gráfico 13
+casos_acesso_professores <- sort(table(dbf.xlsx$acesso_professores, exclude = NULL))
+casos_acesso_professores
+#          N/A ou Não sabe                  Melhorou Foi mais ou menos o mesmo 
+#                        4                        14                        28 
+#                   Piorou 
+#                       41
+
+pct_acesso_professores <- paste(round(unname(casos_acesso_professores) / 
+                                        sum(unname(casos_acesso_professores)) * 100), "%")
+pct_acesso_professores
+# [1] "5 %"  "16 %" "32 %" "47 %"
+
+n <- length(casos_acesso_professores)
+n
+#[1] 4
+
+#Gráfico 13: Acesso aos professores na pandemia
+# Gráfico tipo "pizza"
+pie(casos_acesso_professores,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray", "orange", "blue", "red", "black", "white", "green"),
+    labels = paste(names(casos_acesso_professores), "-", pct_acesso_professores),
+    main = "Gráfico 13: Acesso aos professores na pandemia")
+
+# Dados do Gráfico 14
+casos_aulas <- sort(table(dbf.xlsx$aulas_durante_pandemia, exclude = NULL))
+casos_aulas
+#            N/A ou Não sabe                  Melhoraram                    Pioraram 
+#                          4                           7                          37 
+#Foram mais ou menos o mesmo 
+#                         39 
+pct_aulas <- paste(round(unname(casos_aulas) / 
+                           sum(unname(casos_aulas)) * 100), "%")
+pct_aulas
+#[1] "5 %"  "8 %"  "43 %" "45 %"
+
+n <- length(casos_aulas)
+n
+#[1] 4
+
+#Gráfico 14: Forma de ministrar as aulas
+# Gráfico tipo "pizza"
+pie(casos_aulas,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray", "orange", "blue", "red", "black", "white", "green"),
+    labels = paste(names(casos_aulas), "-", pct_aulas),
+    main = "Gráfico 14: Modo de lecionar durante a pandemia")
+
+# Dados do Gráfico 15
+casos_ies_reinicio <- sort(table(dbf.xlsx$ies_reinicio, exclude = NULL))
+casos_ies_reinicio
+#  N/A ou Não sabe 
+#                                                          10 
+#        Não, ainda não retornou nenhuma atividade presencial 
+#                                                          21 
+#Em parte (apenas algumas atividades  presenciais retornaram) 
+#                                                          24 
+#              Sim (retornou todas as atividades presenciais) 
+#                                                          32
+#names(casos_ies_reinicio) <- c("Em parte", "N/A ou Não sabe", "Não retornou", "Retornou todas atividades")
+
+pct_ies_reinicio <- paste(round(unname(casos_ies_reinicio) / 
+                                  sum(unname(casos_ies_reinicio)) * 100), "%")
+pct_ies_reinicio
+#[1] "11 %" "24 %" "28 %" "37 %"
+n <- length(casos_ies_reinicio)
+n
+#[1] 4
+
+#Gráfico 15: IES reiniciou atividades presenciais
+# Gráfico tipo "pizza"
+pie(casos_ies_reinicio,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray",  "red", "blue","orange", "black", "white", "green"),
+    labels = paste(names(casos_ies_reinicio), "-", pct_ies_reinicio),
+    main = "Gráfico 15: IES reiniciou atividades presenciais")
+
+# Dados do Gráfico 16
+casos_acesso_internet <- sort(table(dbf.xlsx$acesso_internet, exclude = NULL))
+casos_acesso_internet
+#Muito melhor do que antes           N/A ou Não sabe      Muito pior que antes            Pior que antes 
+#                        1                         1                         4                        10 
+#Melhor do que antes         O mesmo que antes 
+#                 17                        54 
+
+pct_acesso_internet <- paste(round(unname(casos_acesso_internet) / 
+                                     sum(unname(casos_acesso_internet)) * 100), "%")
+pct_acesso_internet
+#[1] "1 %"  "1 %"  "5 %"  "11 %" "20 %" "62 %"
+n <- length(casos_acesso_internet)
+n
+#[1] 6
+
+#Gráfico 16: Acesso aos serviços de internet
+# Gráfico tipo "pizza"
+pie(casos_acesso_internet,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("white", "orange", "blue", "red","black", "gray"),
+    labels = paste(names(casos_acesso_internet), "-", pct_acesso_internet),
+    main = "Gráfico 16: Acesso aos serviços de internet")
+
+# Dados do Gráfico 17
+casos_performance <- sort(table(dbf.xlsx$desempenho_escolar, exclude = NULL))
+casos_performance
+#          N/A ou Não sabe                  Aumentou                  Diminuiu Foi mais ou menos o mesmo 
+#                        2                        23                        27                        35
+pct_performance <- paste(round(unname(casos_performance) / 
+                                 sum(unname(casos_performance)) * 100), "%")
+pct_performance
+#[1] "2 %"  "26 %" "31 %" "40 %"
+n <- length(casos_performance)
+n
+#[1] 4
+
+#Gráfico 17: Desempenho escolar
+# Gráfico tipo "pizza"
+pie(casos_performance,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray",  "red", "blue","orange", "black", "white", "green"),
+    labels = paste(names(casos_performance), "-", pct_performance),
+    main = "Gráfico 17: Desempenho escolar na pandemia")
+
+# Dados do Gráfico 18
+casos_aluno_vivenciou <- sort(table(dbf.xlsx$vivenciou, exclude = NULL))
+names(casos_aluno_vivenciou) <- c("Discriminação por desconhecidos", "Ajuda/assistência de desconhecidos", 
+                                  "Alterações nas condições de vida", "Não se aplica",
+                                  "Dificuldade se deslocar/viajar")
+casos_aluno_vivenciou
+#   Discriminação por desconhecidos Ajuda/assistência de desconhecidos   Alterações nas condições de vida 
+#                                 1                                  6                                 16 
+#                     Não se aplica     Dificuldade se deslocar/viajar 
+#                                31                                 33
+
+pct_aluno_vivenciou <- paste(round(unname(casos_aluno_vivenciou) / 
+                                     sum(unname(casos_aluno_vivenciou)) * 100), "%")
+
+pct_aluno_vivenciou
+#[1] "1 %"  "7 %"  "18 %" "36 %" "38 %"
+n = length(casos_aluno_vivenciou)
+n
+#[1] 5
+#Gráfico 18: Dificuldades vividas pelo aluno
+# Gráfico tipo "pizza"
+pie(casos_aluno_vivenciou,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray", "orange", "blue", "red","black"),
+    labels = paste(names(casos_aluno_vivenciou), "-", pct_aluno_vivenciou),
+    main = "Gráfico 18: Dificuldades vividas pelo aluno")
+
+# Gráfico tipo "barra"
+graph.casos_aluno_vivenciou <- barplot(casos_aluno_vivenciou, 
+                               main = "Gráfico 18: Dificuldades vividas pelo aluno",
+                               xlab = "Dificuldades", 
+                               ylab = "Respondentes",
+                               horiz = F,
+                               col = "orange",
+                               ylim = c(0,max(casos_aluno_vivenciou) + 50))
+text(x = graph.casos_aluno_vivenciou, y = unname(casos_aluno_vivenciou), label = names(casos_aluno_vivenciou), cex=1, pos=3)
+axis(1, at=graph.casos_aluno_vivenciou, labels=paste("(", pct_aluno_vivenciou, ")"), tick=F, las=1, line=-1.0, cex.axis= 1.1)
+
+# Dados do Gráfico 19
+casos_despesas <- sort(table(dbf.xlsx$despesas, exclude = NULL))
+casos_despesas
+#   N/A ou Não quero responder                    Diminuiram Foram mais ou menos os mesmos                    Aumentaram 
+#                            1                            22                            27                            37
+pct_despesas <- paste(round(unname(casos_despesas) / 
+                              sum(unname(casos_despesas)) * 100), "%")
+pct_despesas
+#[1] "43 %" "25 %" "31 %" "1 %" 
+
+n = length(casos_despesas)
+n
+
+#Gráfico 19: Despesas durante a pandemia
+# Gráfico tipo "pizza"
+pie(casos_despesas,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("red","gray", "blue","orange", "black", "white", "green"),
+    labels = paste(names(casos_despesas), "-", pct_despesas),
+    main = "Gráfico 19: Despesas durante a pandemia")
+
+# Dados do Gráfico 21
+casos_renda <- table(dbf.xlsx$renda_financeira, exclude = NULL)
+pct_renda <- paste(round(unname(casos_renda) / 
+                           sum(unname(casos_renda)) * 100), "%")
+
+n=length(casos_renda)
+#Gráfico 21: Renda durante a pandemia
+# Gráfico tipo "pizza"
+pie(casos_renda,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray", "red", "blue","orange", "black", "white", "green"),
+    labels = paste(names(casos_renda), "-", pct_renda),
+    main = "Gráfico 21: Renda durante a pandemia")
+
+
+# Dados do Gráfico 21
+casos_ajuda <- sort(table(dbf.xlsx$ajuda_financeira, exclude = NULL))
+casos_ajuda
+#Sim Não 
+# 13  74
+pct_ajuda <- paste(round(unname(casos_ajuda) / 
+                           sum(unname(casos_ajuda)) * 100), "%")
+pct_ajuda
+#[1] "15 %" "85 %"
+n = length(casos_ajuda)
+n
+#[1] 2
+#Gráfico 21: Recebeu auxílio financeiro da IES
+# Gráfico tipo "pizza"
+pie(casos_ajuda,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("red","blue", "gray","orange", "black", "white", "green"),
+    labels = paste(names(casos_ajuda), "-", pct_ajuda),
+    main = "Gráfico 21: Recebeu auxílio financeiro da IES")
+
+# Dados do Gráfico 22
+casos_endividamento <- sort(table(dbf.xlsx$nivel_endividamento, exclude = NULL))
+casos_endividamento
+#N/A ou Não sabe                    Diminuiram                    Aumentaram Estão mais ou menos as mesmas 
+#              4                            11                            16                            56
+pct_endividamento <- paste(round(unname(casos_endividamento) / 
+                                   sum(unname(casos_endividamento)) * 100), "%")
+pct_endividamento
+#[1] "5 %"  "13 %" "18 %" "64 %"
+n = length(casos_endividamento)
+n
+#[1] 4
+#Gráfico 22: Dívidas durante pandemia
+# Gráfico tipo "pizza"
+pie(casos_endividamento,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("red","blue", "gray","orange", "black", "white", "green"),
+    labels = paste(names(casos_endividamento), "-", pct_endividamento),
+    main = "Gráfico 22: Dívidas durante a pandemia")
+
+## Gráfico 23 
+# Descobrindo as ocorrências
+if(!("stringr") %in% installed.packages()) install.packages("stringr")
+library(stringr)
+perfil_despesas <- dbf.xlsx$despesas_cresceram # selecionando todos os casos da variável despesas cresceram
+relacionadas_saude <- length(na.omit(str_match(perfil_despesas, "Relacionadas com saúde")))
+viagens_deslocamentos <- length(na.omit(str_match(perfil_despesas, "Viagens/deslocamentos")))
+transporte_urbano <- length(na.omit(str_match(perfil_despesas, "Transporte urbano")))
+aluguel <- length(na.omit(str_match(perfil_despesas, "Aluguel")))
+internet <- length(na.omit(str_match(perfil_despesas, "Internet")))
+alimentacao <- length(na.omit(str_match(perfil_despesas, "Alimentação")))  
+outras <- length(na.omit(str_match(perfil_despesas, "Outras")))
+casos_perfil_despesas <- c(relacionadas_saude, viagens_deslocamentos, transporte_urbano, aluguel, internet, alimentacao, outras)
+casos_perfil_despesas
+#[1] 29 42 32 32 35 66 27
+names(casos_perfil_despesas) <- c("Relac. saúde", "Deslocamento", "Transp. urbano", 
+                                  "Aluguel", "Internet", "Alimentação", "Outras")
+casos_perfil_despesas
+casos_perfil_despesas <- sort(casos_perfil_despesas)
+pct_perfil_despesas <- paste0(round(unname(casos_perfil_despesas) / sum(unname(casos_perfil_despesas)) * 100,0), "%")
+pct_perfil_despesas
+#[1] "10%" "11%" "12%" "12%" "13%" "16%" "25%"
+n = length(casos_perfil_despesas)
+n
+#[1] 7
+# Gráfico do tipo barras
+graph.perfil.despesas <- barplot(casos_perfil_despesas, 
+                                 main = "Gráfico 23: Despesas que cresceram na pandemia",
+                                 xlab = "Despesas", 
+                                 ylab = "Quantidade",
+                                 col = "orange",
+                                 ylim = c(0,max(casos_perfil_despesas) + 30))
+text(x = graph.perfil.despesas, y = casos_perfil_despesas, label = unname(casos_perfil_despesas), cex=1, pos=3)
+axis(1, at=graph.perfil.despesas, labels=paste("(", pct_perfil_despesas, ")"), tick=F, las=1, line=-1.0, cex.axis= 1.1)      
+
+
+# Gráfico 24: situacao_durante-pandemia
+# Nuvem de palavras
+
+#Load the packages
+if(!"wordcloud" %in% installed.packages()) install.packages("wordcloud")
+library(wordcloud)
+if(!"wordcloud2" %in% installed.packages()) install.packages("wordcloud2")
+library(wordcloud2)
+if(!"RColorBrewer" %in% installed.packages()) install.packages("RColorBrewer")
+library(RColorBrewer)
+if(!"tm" %in% installed.packages()) install.packages("tm")
+library(tm)
+
+#Carregando o texto e eliminando os NA (missing data)
+texto <- na.omit(dbf.xlsx$situação_durante_pandemia)
+
+# Criando um corpus  
+docs <- Corpus(VectorSource(texto))
+
+# Limpando o texto
+# Para utilizar o comando "pipe" (%>%) ou operador "tee pipe" (%T>%) , pode-se "carregar" o pacote magrittr
+if(!"magrittr" %in% installed.packages()) install.packages("magrittr")
+library(magrittr)
+docs <- docs %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("portuguese"))
+
+# Criar uma matriz de termos de documento
+# Uma matriz de termos de documento é uma matriz matemática que descreve a frequência 
+# dos termos que ocorrem em uma coleção de documentos.
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(words),freq=words)
+
+# Gerar a núvem de palavras
+set.seed(1234) # para reprodutibilidade 
+wordcloud(words = df$word, freq = df$freq, min.freq = 1, # menor "min.freq", maior/precisão, menor número/palavras     
+          max.words=200, random.order=FALSE, rot.per=0.35,       
+          colors=brewer.pal(8, "Dark2"))
+mtext("Gráfico 24: Manifestação sobre a sua situação durante a pandemia", side=3, line = 3)
+print("Principais ocorrências de palavras em situação durante a pandemia")
+for (k in 1:length (which(pmax(df$freq) > 2))) {
+  print(paste(df$word[k], df$freq[k],sep = " = " ))
+}
+
+#Gráfico 25: Qualidade de vida
+#Carregando o texto e eliminando os NA (missing data)
+texto <- na.omit(dbf.xlsx$qualidade_de_vida)
+# Criando um corpus  
+docs <- Corpus(VectorSource(texto))
+# Limpando o texto
+docs <- docs %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("portuguese"))
+# Criar uma matrix de termos de documento
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(words),freq=words)
+# Gerar a núvem de palavras
+set.seed(1234) # para reprodutibilidade 
+wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
+          max.words=200, random.order=FALSE, rot.per=0.35,       
+          colors=brewer.pal(8, "Dark2"))
+mtext("Gráfico 25: Manifestação sobre a sua qualidade de vida", side=3, line = 3)
+print("Principais ocorrências de palavras em qualidade de vida")
+for (k in 1:length (which(pmax(df$freq) > 2))) {
+  print(paste(df$word[k], df$freq[k],sep = " = " ))
+}
+
+#Gráfico 26: IES fez de positivo na pandemia
+#Carregando o texto e eliminando os NA (missing data)
+texto <- na.omit(dbf.xlsx$ies_positivo)
+# Criando um corpus  
+docs <- Corpus(VectorSource(texto))
+# Limpando o texto
+docs <- docs %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("portuguese"))
+# Criar uma matrix de termos de documento
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(words),freq=words)
+# Gerar a núvem de palavras
+set.seed(1234) # para reprodutibilidade 
+wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
+          max.words=200, random.order=FALSE, rot.per=0.35,       
+          colors=brewer.pal(8, "Dark2"))
+mtext("Gráfico 26: O que a IES fez de positivo na pandemia", side=3, line = 3)
+print("Principais ocorrências de palavras do que a IES fez de positivo na pandemia")
+for (k in 1:length (which(pmax(df$freq) > 2))) {
+  print(paste(df$word[k], df$freq[k],sep = " = " ))
+}
+
+#Gráfico 27: IES poderia melhorar na pandemia
+#Carregando o texto e eliminando os NA (missing data)
+texto <- na.omit(dbf.xlsx$ies_melhorar)
+# Criando um corpus  
+docs <- Corpus(VectorSource(texto))
+# Limpando o texto
+docs <- docs %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("portuguese"))
+# Criar uma matrix de termos de documento
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(words),freq=words)
+# Gerar a núvem de palavras
+#set.seed(1234) # para reprodutibilidade 
+wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
+          max.words=200, random.order=FALSE, rot.per=0.35,       
+          colors=brewer.pal(8, "Dark2"))
+mtext("Gráfico 27: O que a IES poderia melhorar na pandemia", side=3, line = 3)
+print("Principais ocorrências de palavras do que a IES poderia melhorar na pandemia")
+for (k in 1:length (which(pmax(df$freq) > 2))) {
+  print(paste(df$word[k], df$freq[k],sep = " = " ))
+}
+
+#Gráfico 28: IES poderia melhor ajudar na pandemia
+#Carregando o texto e eliminando os NA (missing data)
+texto <- na.omit(dbf.xlsx$ies_ajudar)
+# Criando um corpus  
+docs <- Corpus(VectorSource(texto))
+# Limpando o texto
+docs <- docs %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("portuguese"))
+# Criar uma matrix de termos de documento
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(words),freq=words)
+# Gerar a núvem de palavras
+set.seed(1234) # para reprodutibilidade 
+wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
+          max.words=200, random.order=FALSE, rot.per=0.35,       
+          colors=brewer.pal(8, "Dark2"))
+mtext("Gráfico 28: Em que a IES poderia melhor ajudar na pandemia", side=3, line = 3)
+print("Principais ocorrências de palavras do que a IES poderia melhora ajudar na pandemia")
+for (k in 1:length (which(pmax(df$freq) > 2))) {
+  print(paste(df$word[k], df$freq[k],sep = " = " ))
+}
+
+
+# Dados do Gráfico 29
+casos_prosseguir_estudos <- table(dbf.xlsx$capacidade_prosseguir_estudos, exclude = NULL)
+pct_prosseguir_estudos <- paste(round(unname(casos_prosseguir_estudos) / 
+                                        sum(unname(casos_prosseguir_estudos)) * 100), "%")
+#Gráfico 30: Capacidade prosseguir estudos
+# Gráfico tipo "pizza"
+pie(casos_prosseguir_estudos,
+    edges = 200, radius = 0.8,
+    clockwise = T,
+    density = NULL, angle = 90, col = c("gray", "orange", "blue", "red","black", "white", "green"),
+    labels = paste(names(casos_prosseguir_estudos), "-", pct_prosseguir_estudos),
+    main = "Gráfico 29: Capacidade para prosseguir ou concluir estudos")
+
+
+# Dados do Gráfico 30
+casos_socializacao <- table(dbf.xlsx$capacidade_socializacao, exclude = NULL)
+pct_socializacao <- paste(round(unname(casos_socializacao) / 
+                                  sum(unname(casos_socializacao)) * 100), "%")
+#Gráfico 30: Capacidade de socialização
+# Gráfico tipo "pizza"
+pie(casos_socializacao,
+    edges = 200, radius = 0.8,
+    clockwise = T,
+    density = NULL, angle = 90, col = c("gray", "orange", "blue", "red","black", "white", "green"),
+    labels = paste(names(casos_socializacao), "-", pct_socializacao),
+    main = "Gráfico 30: Capacidade de socialização")
+
+# Dados do Gráfico 31
+casos_bem_estar <- table(dbf.xlsx$bem_estar_psicologico, exclude = NULL)
+pct_bem_estar <- paste(round(unname(casos_bem_estar) / 
+                               sum(unname(casos_bem_estar)) * 100), "%")
+#Gráfico 31: Bem-estar psicológico
+# Gráfico tipo "pizza"
+pie(casos_bem_estar,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray", "orange", "blue", "white", "black", "red",  "green"),
+    labels = paste(names(casos_bem_estar), "-", pct_bem_estar),
+    main = "Gráfico 31: Bem-estar psicológico")
+
+# Dados do Gráfico 32
+casos_espaco_fisico <- table(dbf.xlsx$espaco_físico, exclude = NULL)
+pct_espaco_fisico <- paste(round(unname(casos_espaco_fisico) / 
+                                   sum(unname(casos_espaco_fisico)) * 100), "%")
+#Gráfico 32: Espaço físico utilizado para atividades escolares
+# Gráfico tipo "pizza"
+pie(casos_espaco_fisico,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray", "orange", "blue", "red", "black", "white", "green"),
+    labels = paste(names(casos_espaco_fisico), "-", pct_espaco_fisico),
+    main = "Gráfico 32: Espaço físico utilizado para atividades escolares")
+
+# Dados do Gráfico 33
+casos_disposicao <- table(dbf.xlsx$disposicao_atividades, exclude = NULL)
+pct_disposicao <- paste(round(unname(casos_disposicao) / 
+                                sum(unname(casos_disposicao)) * 100), "%")
+#Gráfico 33: Disposição para participar das atividades escolares
+# Gráfico tipo "pizza"
+pie(casos_disposicao,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("gray",  "red", "blue","orange", "black", "white", "green"),
+    labels = paste(names(casos_disposicao), "-", pct_disposicao),
+    main = "Gráfico 33: Disposição para participar das atividades escolares")
+
+
+# Dados do Gráfico 34
+casos_ansiedade <- table(dbf.xlsx$nivel_ansiedade, exclude = NULL)
+pct_aniedade <- paste(round(unname(casos_ansiedade) / 
+                              sum(unname(casos_ansiedade)) * 100), "%")
+#Gráfico 34: Nível de ansiedade para o futuro
+# Gráfico tipo "pizza"
+pie(casos_ansiedade,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("white","blue", "gray","orange", "black", "red", "green"),
+    labels = paste(names(casos_ansiedade), "-", pct_aniedade),
+    main = "Gráfico 34:  Nível de ansiedade quanto ao futuro")
+
+
+# Dados do Gráfico 35
+casos_ansiedade_planejamento <- table(dbf.xlsx$ansiedade_planejamento, exclude = NULL)
+pct_ansiedade_planejamento <- paste(round(unname(casos_ansiedade_planejamento) / 
+                                            sum(unname(casos_ansiedade_planejamento)) * 100), "%")
+#Gráfico 35: Nível de ansiedade para planejamento pessoal
+# Gráfico tipo "pizza"
+pie(casos_ansiedade_planejamento,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("black","blue", "gray","orange", "red", "white", "green"),
+    labels = paste(names(casos_ansiedade_planejamento), "-", pct_ansiedade_planejamento),
+    main = "Gráfico 35: Nível de ansiedade para planejamento pessoal")
+
+# Dados do Gráfico 36
+casos_ansiedade_longo <- table(dbf.xlsx$ansiedade_longo_prazo, exclude = NULL)
+pct_ansiedade_longo <- paste(round(unname(casos_ansiedade_longo) / 
+                                     sum(unname(casos_ansiedade_longo)) * 100), "%")
+#Gráfico 36: Nível de ansiedade para planejamento a longo prazo
+# Gráfico tipo "pizza"
+pie(casos_ansiedade_longo,
+    edges = 200, radius = 0.8,
+    clockwise = F,
+    density = NULL, angle = 90, col = c("black","blue", "gray","orange", "red", "white", "green"),
+    labels = paste(names(casos_ansiedade_longo), "-", pct_ansiedade_longo),
+    main = "Gráfico 36: Nível de ansiedade para planejamento a longo prazo")
+
+
+#Gráfico 37: Dificuldades financeiras durante a pandemia
+#Carregando o texto e eliminando os NA (missing data)
+texto <- na.omit(dbf.xlsx$dificuldades_financeiras)
+# Criando um corpus  
+docs <- Corpus(VectorSource(texto))
+# Limpando o texto
+docs <- docs %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("portuguese"))
+# Criar uma matrix de termos de documento
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(words),freq=words)
+# Gerar a núvem de palavras
+set.seed(1234) # para reprodutibilidade 
+wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
+          max.words=200, random.order=FALSE, rot.per=0.35,       
+          colors=brewer.pal(8, "Dark2"))
+mtext("Gráfico 37: Dificuldades financeiras durante a pandemia", side=3, line = 3)
+print("Principais ocorrências de palavras das dificuldades financeiras durante a pandemia")
+for (k in 1:length (which(pmax(df$freq) > 2))) {
+  print(paste(df$word[k], df$freq[k],sep = " = " ))
+}
+
+
+#Gráfico 38: Dificuldades acadêmicas durante a pandelia
+#Carregando o texto e eliminando os NA (missing data)
+texto <- na.omit(dbf.xlsx$dificuldades_academicas)
+# Criando um corpus  
+docs <- Corpus(VectorSource(texto))
+# Limpando o texto
+docs <- docs %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("portuguese"))
+# Criar uma matrix de termos de documento
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(words),freq=words)
+# Gerar a núvem de palavras
+set.seed(1234) # para reprodutibilidade 
+wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
+          max.words=200, random.order=FALSE, rot.per=0.35,       
+          colors=brewer.pal(8, "Dark2"))
+mtext("Gráfico 38: Dificuldades acadêmicas durante a pandemia", side=3, line = 3)
+print("Principais ocorrências de palavras das dificuldades acadêmicas durante a pandemia")
+for (k in 1:length (which(pmax(df$freq) > 2))) {
+  print(paste(df$word[k], df$freq[k],sep = " = " ))
+}
+
+#Gráfico 39: Comentários finais
+#Carregando o texto e eliminando os NA (missing data)
+texto <- na.omit(dbf.xlsx$detalhes_finais)
+
+# Criando um corpus  
+docs <- Corpus(VectorSource(texto))
+
+# Limpando o texto
+docs <- docs %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("portuguese"))
+
+# Criar uma matrix de termos de documento
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(words),freq=words)
+
+# Gerar a núvem de palavras
+set.seed(1234) # para reprodutibilidade 
+wordcloud(words = df$word, freq = df$freq, min.freq = 1, # maior "min.freq", maior/precisão, menor número/palavras     
+          max.words=200, random.order=FALSE, rot.per=0.35,       
+          colors=brewer.pal(8, "Dark2"))
+mtext("Gráfico 39: Comentários finais", side=3, line = 3)
+print("Principais ocorrências de palavras nos comentários finais")
+for (k in 1:length (which(pmax(df$freq) > 2))) {
+  print(paste(df$word[k], df$freq[k],sep = " = " ))
+}
+
+# Dados do Gráfico 40
+casos_acesso_saude <- table(dbf.xlsx$acesso_servicos_saude, exclude = NULL)
+pct_acesso_saude <- paste(round(unname(casos_acesso_saude) / 
+                                  sum(unname(casos_acesso_saude)) * 100), "%")
+#Gráfico 40: Acesso aos serviços de saude
+# Gráfico tipo "pizza"
+pie(casos_acesso_saude,
+    edges = 200, radius = 0.8,
+    clockwise = T,
+    density = NULL, angle = 90, col = c("gray", "orange", "blue", "red","black"),
+    labels = paste(names(casos_acesso_saude), "-", pct_acesso_saude),
+    main = "Gráfico 40: Acesso aos serviços de saude")
+
+

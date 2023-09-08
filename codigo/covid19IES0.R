@@ -67,18 +67,18 @@ axis(1, at=graph.idade, labels=paste("(", pct_idade, ")"), tick=F, las=1, line=-
 idade_concat <- data.frame(idade=dbf.xlsx$idade, faixa_etaria="")
 
 for (k in 1:nrow(idade_concat)) {
-  if(is.na(idade_concat$idade[k])) idade_concat$faixa_etaria[k] <- "ND"
-  if(idade_concat$idade[k] <= 21) idade_concat$faixa_etaria[k] <- "de 17 a 21 anos"
-  if(idade_concat$idade[k] >= 22 & idade_concat$idade[k] <= 26) idade_concat$faixa_etaria[k] <- "de 22 a 26 anos"
-  if(idade_concat$idade[k] >= 27 & idade_concat$idade[k] <= 31) idade_concat$faixa_etaria[k] <- "de 27 a 31 anos"
-  if(idade_concat$idade[k] >= 32 & idade_concat$idade[k] <= 36) idade_concat$faixa_etaria[k] <- "de 32 a 36 anos"
-  if(idade_concat$idade[k] >= 37 & idade_concat$idade[k] <= 41) idade_concat$faixa_etaria[k] <- "de 37 a 41 anos"
-  if(idade_concat$idade[k] >= 42 & idade_concat$idade[k] <= 46) idade_concat$faixa_etaria[k] <- "de 42 a 46 anos" 
-  if(idade_concat$idade[k] >= 47 & idade_concat$idade[k] <= 51) idade_concat$faixa_etaria[k] <- "de 47 a 51 anos" 
-  if(idade_concat$idade[k] >= 52 & idade_concat$idade[k] <= 56) idade_concat$faixa_etaria[k] <- "de 52 a 56 anos"
-  if(idade_concat$idade[k] >= 57 & idade_concat$idade[k] <= 61) idade_concat$faixa_etaria[k] <- "de 57 a 61 anos" 
-  if(idade_concat$idade[k] > 61) idade_concat$faixa_etaria[k] <- "acima de 61 anos"
-}
+  if(is.na(idade_concat$idade[k])) {idade_concat$faixa_etaria[k] <- "ND" 
+  } else if(idade_concat$idade[k] <= 21) {idade_concat$faixa_etaria[k] <- "de 17 a 21 anos"
+  } else if(idade_concat$idade[k] >= 22 & idade_concat$idade[k] <= 26) {idade_concat$faixa_etaria[k] <- "de 22 a 26 anos"
+  } else if(idade_concat$idade[k] >= 27 & idade_concat$idade[k] <= 31) {idade_concat$faixa_etaria[k] <- "de 27 a 31 anos"
+  } else if(idade_concat$idade[k] >= 32 & idade_concat$idade[k] <= 36) {idade_concat$faixa_etaria[k] <- "de 32 a 36 anos"
+  } else if(idade_concat$idade[k] >= 37 & idade_concat$idade[k] <= 41) {idade_concat$faixa_etaria[k] <- "de 37 a 41 anos"
+  } else if(idade_concat$idade[k] >= 42 & idade_concat$idade[k] <= 46) {idade_concat$faixa_etaria[k] <- "de 42 a 46 anos" 
+  } else if(idade_concat$idade[k] >= 47 & idade_concat$idade[k] <= 51) {idade_concat$faixa_etaria[k] <- "de 47 a 51 anos" 
+  } else if(idade_concat$idade[k] >= 52 & idade_concat$idade[k] <= 56) {idade_concat$faixa_etaria[k] <- "de 52 a 56 anos"
+  } else if(idade_concat$idade[k] >= 57 & idade_concat$idade[k] <= 61) {idade_concat$faixa_etaria[k] <- "de 57 a 61 anos" 
+  } else if(idade_concat$idade[k] > 61) {idade_concat$faixa_etaria[k] <- "acima de 61 anos"
+  }}
 
 casos_idade_concat <- table(idade_concat$faixa_etaria)
 casos_idade_concat

@@ -135,11 +135,19 @@ ggplot(df_conjugal, aes(x=reorder(situacao_conjugal,-n), y=n))+
   coord_flip()
 
 #Gráfico 4: Quantidade de respondentes por situação empregatícia
-df_emprego <- dbf.csv %>% 
-  count(situacao_empregaticia) %>% 
-  mutate(perc=round(n/sum(n)*100,0))
+df_emprego <- dbf.csv 
 
-df_emprego[1,1] <- 'Nao Respondeu'
+df_emprego$situacao_empregaticia[df_emprego$situacao_empregaticia %in% c("Servidora pública", "Autônomo(a)", "Estagiário(a)", "Bolsista", "Empregado(a)")] <- "Employed"
+df_emprego$situacao_empregaticia[df_emprego$situacao_empregaticia %in% c("Dependente (dos pais, etc.)", "Desempregado(a)")] <- "Unemployed"
+df_emprego$situacao_empregaticia[df_emprego$situacao_empregaticia %in% c("Aposentada")] <- "Retired"
+
+df_emprego <- df_emprego %>% 
+  count(situacao_empregaticia) %>% 
+  mutate(perc=round(n/sum(n)*100,0)) 
+
+df_emprego$situacao_empregaticia[1] <- "Non-response"
+
+df_emprego
 
 # Empregado : Servidora publica, Autonomo, Estagiario, Bolsista
 # Desempregado : 
@@ -151,12 +159,10 @@ df_emprego[1,1] <- 'Nao Respondeu'
 # Nao respondeu : Non-response
 # Aposentado : Retired
 
-
-df_emprego
-
 ggplot(df_emprego, aes(x=reorder(situacao_empregaticia, -n), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
-  geom_text(aes(label=paste(n,' (', perc, '%)')),nudge_y=2.5, size = 2.7)+
+  geom_text(aes(label=paste(n,' (', perc, '%)')),nudge_y=7.5)+
+  scale_y_continuous(limits=c(0, 75))+
   labs(x='', y='Number of Respondents')+
   theme_minimal()+
   coord_flip()
@@ -214,14 +220,21 @@ ggplot(df_ies, aes(x=ies, y=n))+
   coord_flip()
 
 # Gráfico 8: Vacinados Covid-19
-df_vacina <- dbf.csv  %>% 
+df_vacina <- dbf.csv  
+
+df_vacina$vacinado[trimws(df_vacina$vacinado)  %in% c("Sim vacinado com duas doses ou com vacina de dose única")] <- "Vaccinated"
+df_vacina$vacinado[trimws(df_vacina$vacinado)  %in% c("Sim vacinado com duas doses, com vacina de dose única e dose de reforço")] <- "Vaccinated"
+df_vacina$vacinado[trimws(df_vacina$vacinado)  %in% c("Sim, com a 1a. dose")] <- "Vaccinated"
+
+df_vacina <- df_vacina  %>% 
   count(vacinado) %>% 
   mutate(perc=round(n/sum(n)*100,0))
 
-df_vacina[1] <- c("Não Respondeu",
-                  "Duas doses ou Única", 
-                  "Duas doses ou Única e reforço",
-                  "Com a 1a. dose")
+df_vacina$vacinado[1] <- "Non-response"
+
+df_vacina
+
+
 
 # Vacinados : "Duas doses ou Única", 
               "Duas doses ou Única e reforço",
@@ -231,12 +244,11 @@ df_vacina[1] <- c("Não Respondeu",
 # Vacinados : Vaccinated
 #               
 
-df_vacina
 
-ggplot(df_vacina, aes(x=vacinado, y=perc))+
-  geom_col(width=.6, fill=alpha('darkred',4), col='black')+
+ggplot(df_vacina, aes(x=reorder(vacinado, -n), y=n))+
+  geom_col(width=.6, fill=alpha('lightblue',4), col='black')+
   geom_text(aes(label=paste(n,' (', perc, '%)')),nudge_y=3.8)+
-  labs(x='', y='Qtde. Respondentes')+
+  labs(x='', y='Qtde. Respondents')+
   theme_minimal()
 
 # Gráfico 9 do tipo barra respondentes por nível de graduação

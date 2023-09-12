@@ -69,6 +69,9 @@ casos_idade_concat <- table(idade_concat$faixa_etaria)
 #              1
 
 df_idade <- as.data.frame(casos_idade_concat) 
+df_idade <- df_idade %>% 
+  mutate(perc=round(Freq/sum(Freq)*100,0))
+
 df_idade
 
 df_idade[1] <- c('Age range: 17-21 years',
@@ -85,7 +88,8 @@ df_idade[1] <- c('Age range: 17-21 years',
 
 ggplot(df_idade, aes(x=Var1, y=Freq))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
-  geom_text(aes(label=Freq),nudge_y=0.9)+
+  geom_text(aes(label=paste(Freq,'(', perc, '%)')),nudge_y=2.5, size = 3.0)+
+  scale_y_continuous(limits=c(0, 30))+
   labs(x='', y='Number of Respondents')+
   ggtitle('')+
   theme_minimal()+

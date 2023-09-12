@@ -95,7 +95,7 @@ ggplot(df_idade, aes(x=Var1, y=Freq))+
 # Gráfico tipo "Barras"
 df_genero <- dbf.csv %>% 
   count(genero) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_genero[1] <- c('Non-response','Female','LGBTQ+', 'Male'); 
 
@@ -110,7 +110,7 @@ ggplot(df_genero, aes(x=reorder(genero, -n), y=n))+
 #Gráfico 3: Quantidade de respondentes por situação conjugal
 df_conjugal <- dbf.csv %>% 
   count(situacao_conjugal) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_conjugal[1,1] <- 'Nao Respondeu'
 df_conjugal[1] <- c('Non-response',
@@ -132,7 +132,7 @@ ggplot(df_conjugal, aes(x=reorder(situacao_conjugal,-n), y=n))+
 #Gráfico 4: Quantidade de respondentes por situação empregatícia
 df_emprego <- dbf.csv %>% 
   count(situacao_empregaticia) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_emprego[1,1] <- 'Nao Respondeu'
 
@@ -160,7 +160,7 @@ ggplot(df_emprego, aes(x=reorder(situacao_empregaticia, -n), y=n))+
 # Gráfico tipo "barras"
 df_tipo_ies <- dbf.csv %>% 
   count(tipo_ies) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_tipo_ies[1,1] <- 'Nao Respondeu'
 
@@ -179,7 +179,7 @@ ggplot(df_tipo_ies, aes(x=reorder(tipo_ies, -perc), y=perc))+
 # Gráfico tipo "barras"
 df_estado <- dbf.csv %>% 
   count(estado_reside) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_estado[1] <- c('Nao Respondeu','Amazonas','Paraná','São Paulo')
 
@@ -194,7 +194,7 @@ ggplot(df_estado, aes(x=estado_reside, y=n))+
 df_ies <- dbf.csv  %>% 
   mutate(ies=gsub(" ","",ies)) %>% 
   count(ies) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_ies[1,1] <- 'Nao Respondeu'
 
@@ -211,7 +211,7 @@ ggplot(df_ies, aes(x=ies, y=n))+
 # Gráfico 8: Vacinados Covid-19
 df_vacina <- dbf.csv  %>% 
   count(vacinado) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_vacina[1] <- c("Não Respondeu",
                   "Duas doses ou Única", 
@@ -237,7 +237,7 @@ ggplot(df_vacina, aes(x=vacinado, y=perc))+
 # Gráfico 9 do tipo barra respondentes por nível de graduação
 df_nivel_ensino <- dbf.csv  %>% 
   count(nivel_ensino) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_nivel_ensino[1,1] <- 'Nao Respondeu'
 
@@ -262,7 +262,7 @@ ggplot(df_nivel_ensino, aes(x=nivel_ensino, y=n))+
 # Gráfico 10 do tipo barra respondentes por Procedencia Aluno
 df_local_estudante <- dbf.csv  %>% 
   count(local_estudante) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_local_estudante[1] <- c("Non-response",
                            "Local of University", 
@@ -280,7 +280,7 @@ ggplot(df_local_estudante, aes(x=reorder(local_estudante, -n), y=n))+
 # Gráfico 11 do tipo barra respondentes : aluno mora com quem
 df_morando_com <- dbf.csv  %>% 
   count(morando_com) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 
 df_morando_com[1] <- c('Non-response',
@@ -298,7 +298,7 @@ ggplot(df_morando_com, aes(x=reorder(morando_com, -perc), y=perc))+
 # Gráfico 12 do tipo barra respondentes : IES Decidiu Fechar
 df_decisao_fechar <- dbf.csv  %>% 
   count(decisao_fechar) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_decisao_fechar[1] <- c('Non-response',
                           'Prudently',
@@ -316,7 +316,7 @@ ggplot(df_decisao_fechar, aes(x=reorder(decisao_fechar, -perc), y=perc))+
 # Gráfico 13 do tipo barra respondentes : IES Migrou Virtual
 df_migrou_virtual <- dbf.csv  %>% 
   count(migrou_virtual) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_migrou_virtual[1] <- c('Non-response',
                           'No',
@@ -333,7 +333,7 @@ ggplot(df_migrou_virtual, aes(x=reorder(migrou_virtual, -perc), y=perc))+
 # Gráfico 14 Acesso à infra-estrutura da IES
 df_acesso_infra_ies <- dbf.csv  %>% 
   count(acesso_infra_ies) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_acesso_infra_ies[1] <- c('Non-response',
                             'Unchanged',
@@ -352,7 +352,7 @@ ggplot(df_acesso_infra_ies, aes(x=reorder(acesso_infra_ies, -perc), y=perc))+
 # Gráfico 15 Acesso aos Professores na pandemia
 df_acesso_professores <- dbf.csv  %>% 
   count(acesso_professores) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_acesso_professores[1] <- c('Non-response',
                             'Unchanged',
@@ -369,7 +369,7 @@ ggplot(df_acesso_professores, aes(x=reorder(acesso_professores, -perc), y=perc))
 # Gráfico 16 Modo de lecionar as aulas durante a pandemia
 df_aulas_durante_pandemia <- dbf.csv  %>% 
   count(aulas_durante_pandemia) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_aulas_durante_pandemia[1] <- c('Não Respondeu',
                               'Unchanged',
@@ -389,7 +389,7 @@ ggplot(df_aulas_durante_pandemia, aes(x=reorder(aulas_durante_pandemia, -perc), 
 # Gráfico 17: IES reiniciou atividades presenciais
 df_ies_reinicio <- dbf.csv  %>% 
   count(ies_reinicio)   %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_ies_reinicio[1] <- c('Non-response',
                         'Partially',
@@ -409,7 +409,7 @@ ggplot(df_ies_reinicio, aes(x=reorder(ies_reinicio, -perc), y=perc))+
 # Gráfico 18: Acesso aos serviços de internet
 df_acesso_internet <- dbf.csv  %>% 
   count(acesso_internet) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_acesso_internet[1] <- c('Não Respondeu',
                         'Melhorou',
@@ -591,7 +591,7 @@ df_despesas_cresceram <- data.frame(despesas= c("Healthcare",
                                                   outras))
 
 # Percentual
-df_despesas_cresceram <- df_despesas_cresceram %>% mutate(perc=round(n/sum(n)*100,1))
+df_despesas_cresceram <- df_despesas_cresceram %>% mutate(perc=round(n/sum(n)*100,0))
 df_despesas_cresceram
 
 ggplot(df_despesas_cresceram, aes(x=reorder(despesas, -perc), y=perc))+
@@ -767,7 +767,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 #Gráfico 31: Capacidade para prosseguir ou concluir estudos
 df_capacidade_prosseguir_estudos <- dbf.csv  %>% 
   count(capacidade_prosseguir_estudos) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_capacidade_prosseguir_estudos[1] <- c('Não Respondeu',
                                'Melhorou',
@@ -790,7 +790,7 @@ ggplot(df_capacidade_prosseguir_estudos, aes(x=capacidade_prosseguir_estudos, y=
 # Gráfico 32: Capacidade de socialização
 df_capacidade_socializacao <- dbf.csv  %>% 
   count(capacidade_socializacao) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_capacidade_socializacao[1] <- c('Não Respondeu',
                                    'Melhorou',
@@ -811,7 +811,7 @@ ggplot(df_capacidade_socializacao, aes(x=capacidade_socializacao, y=perc))+
 #Gráfico 33 Bem-estar psicológico
 df_bem_estar_psicologico <- dbf.csv  %>% 
   count(bem_estar_psicologico) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_bem_estar_psicologico[1] <- c('Não Respondeu',
                                  'Melhorou',
@@ -834,7 +834,7 @@ ggplot(df_bem_estar_psicologico, aes(x=bem_estar_psicologico, y=perc))+
 # Gráfico 34: Espaço físico utilizado para atividades escolares
 df_espaco_fisico <- dbf.csv  %>% 
   count(espaco_físico) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_espaco_fisico[1] <- c('Não Respondeu',
                          'Não Mudou',
@@ -855,7 +855,7 @@ ggplot(df_espaco_fisico, aes(x=espaco_físico, y=perc))+
 # Dados do Gráfico 35
 df_disposicao_atividades <- dbf.csv  %>% 
   count(disposicao_atividades) %>% 
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_disposicao_atividades[1] <- c('Não Respondeu',
                          'Aumentou',
@@ -877,7 +877,7 @@ ggplot(df_disposicao_atividades, aes(x=disposicao_atividades, y=perc))+
 # Gráfico 36: Nível de ansiedade para o futuro
 df_nivel_ansiedade <- dbf.csv  %>% 
   count(nivel_ansiedade)%>%
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_nivel_ansiedade[1,1] <- 'Não Respondeu'
 
@@ -895,7 +895,7 @@ ggplot(df_nivel_ansiedade, aes(x=nivel_ansiedade, y=perc))+
 # Gráfico 37: Nível de ansiedade para planejamento pessoal
 df_ansiedade_planejamento <- dbf.csv  %>% 
   count(ansiedade_planejamento) %>%
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_ansiedade_planejamento[1,1] <- 'Não Respondeu'
 
@@ -912,7 +912,7 @@ ggplot(df_ansiedade_planejamento, aes(x=ansiedade_planejamento, y=perc))+
 # Gráfico 38: Nível de ansiedade para planejamento a longo prazo
 df_ansiedade_longo_prazo <- dbf.csv  %>% 
   count(ansiedade_longo_prazo) %>%
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_ansiedade_longo_prazo[1,1] <- 'Não Respondeu'
                              
@@ -1019,7 +1019,7 @@ for (k in 1:length (which(pmax(df$freq) > 2))) {
 # Gráfico 42: Acesso aos serviços de saude
 df_acesso_servicos_saude <- dbf.csv  %>% 
   count(acesso_servicos_saude) %>%
-  mutate(perc=round(n/sum(n)*100,1))
+  mutate(perc=round(n/sum(n)*100,0))
 
 df_acesso_servicos_saude[1] <- c('Não Respondeu',
                                  'Melhorou',

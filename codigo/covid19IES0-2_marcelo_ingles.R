@@ -124,8 +124,9 @@ df_conjugal
 
 ggplot(df_conjugal, aes(x=reorder(situacao_conjugal,-n), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
-  geom_text(aes(label=paste(n,'(', perc, '%)')),nudge_y=4.1, size = 2.3)+
+  geom_text(aes(label=paste(n,'(', perc, '%)')),nudge_y=12)+
   labs(x='', y='Number of Respondents')+
+  scale_y_continuous(limits=c(0, 80))+
   theme_minimal()+
   coord_flip()
 
@@ -239,8 +240,6 @@ df_nivel_ensino <- dbf.csv  %>%
   count(nivel_ensino) %>% 
   mutate(perc=round(n/sum(n)*100,0))
 
-df_nivel_ensino[1,1] <- 'Nao Respondeu'
-
 df_nivel_ensino[1] <- c('Non-response',
                         'PHD',
                         'Technical Education',
@@ -251,10 +250,11 @@ df_nivel_ensino[1] <- c('Non-response',
 
 df_nivel_ensino
 
-ggplot(df_nivel_ensino, aes(x=nivel_ensino, y=n))+
+ggplot(df_nivel_ensino, aes(x=reorder(nivel_ensino,-n), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
-  geom_text(aes(label=paste(n,' (', perc, '%)')),nudge_y=2.9, size=2.7)+
+  geom_text(aes(label=paste(n,' (', perc, '%)')),nudge_y=12)+
   labs(x='', y='Number of Respondents')+
+  scale_y_continuous(limits=c(0, 80))+
   theme_minimal()+
   coord_flip()
 
@@ -307,7 +307,7 @@ df_decisao_fechar[1] <- c('Non-response',
 
 df_decisao_fechar
 
-ggplot(df_decisao_fechar, aes(x=reorder(decisao_fechar, -perc), y=perc))+
+ggplot(df_decisao_fechar, aes(x=reorder(decisao_fechar, -n), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
   geom_text(aes(label=paste(n, ' (', perc, '%)')),nudge_y=4)+
   labs(x='', y='Number of Respondents')+
@@ -324,7 +324,7 @@ df_migrou_virtual[1] <- c('Non-response',
 
 df_migrou_virtual
 
-ggplot(df_migrou_virtual, aes(x=reorder(migrou_virtual, -perc), y=perc))+
+ggplot(df_migrou_virtual, aes(x=reorder(migrou_virtual, -n), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
   geom_text(aes(label=paste(n, ' (', perc, '%)')),nudge_y=4)+
   labs(x='', y='Number of Respondents')+
@@ -357,7 +357,7 @@ df_acesso_professores <- dbf.csv  %>%
 df_acesso_professores[1] <- c('Non-response',
                             'Unchanged',
                             'Improved',
-                            'Don t know',
+                            'Don\' t know',
                             'Worsened')
 
 ggplot(df_acesso_professores, aes(x=reorder(acesso_professores, -perc), y=perc))+
@@ -371,7 +371,7 @@ df_aulas_durante_pandemia <- dbf.csv  %>%
   count(aulas_durante_pandemia) %>% 
   mutate(perc=round(n/sum(n)*100,0))
 
-df_aulas_durante_pandemia[1] <- c('Não Respondeu',
+df_aulas_durante_pandemia[1] <- c('Non-response',
                               'Unchanged',
                               'Increased',
                               'Don\'t know',
@@ -487,10 +487,11 @@ df_despesas[1] <- c('Non-Response',
 
 df_despesas
 
-ggplot(df_despesas, aes(x=reorder(despesas,-perc), y=perc))+
+ggplot(df_despesas, aes(x=reorder(despesas,-perc), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
   geom_text(aes(label=paste(n, '(', perc, '%)')),nudge_y=5)+
   labs(x='', y='Number of Respondents')+
+  scale_y_continuous(limits=c(0, 45))+
   theme_minimal()+
   coord_flip()
 
@@ -507,10 +508,11 @@ df_renda_financeira[1] <- c('Non-Response',
 
 df_renda_financeira
 
-ggplot(df_renda_financeira, aes(x=reorder(renda_financeira, -perc), y=perc))+
+ggplot(df_renda_financeira, aes(x=reorder(renda_financeira, -n), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
-  geom_text(aes(label=paste(n, '(', perc, '%)')),nudge_y=4)+
+  geom_text(aes(label=paste(n, '(', perc, '%)')),nudge_y=6)+
   labs(x='', y='Number of Respondents')+
+  scale_y_continuous(limits=c(0, 50))+
   theme_minimal()+
   coord_flip()
 
@@ -525,7 +527,7 @@ df_ajuda_financeira[1] <- c('Non-response',
 
 df_ajuda_financeira
 
-ggplot(df_ajuda_financeira, aes(x=reorder(ajuda_financeira, -perc), y=perc))+
+ggplot(df_ajuda_financeira, aes(x=reorder(ajuda_financeira, -n), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
   geom_text(aes(label=paste(n, '(', perc, '%)')),nudge_y=7)+
   labs(x='', y='Number of Respondents')+
@@ -544,9 +546,9 @@ df_nivel_endividamento[1] <- c('Non-response',
 
 df_nivel_endividamento
 
-ggplot(df_nivel_endividamento, aes(x=reorder(nivel_endividamento, -perc), y=perc))+
+ggplot(df_nivel_endividamento, aes(x=reorder(nivel_endividamento, -n), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
-  geom_text(aes(label=paste(n, '(', perc, '%)')),nudge_y=3)+
+  geom_text(aes(label=paste(n, '(', perc, '%)')),nudge_y=4)+
   labs(x='', y='Number of Respondents')+
   theme_minimal()
 
@@ -594,10 +596,11 @@ df_despesas_cresceram <- data.frame(despesas= c("Healthcare",
 df_despesas_cresceram <- df_despesas_cresceram %>% mutate(perc=round(n/sum(n)*100,0))
 df_despesas_cresceram
 
-ggplot(df_despesas_cresceram, aes(x=reorder(despesas, -perc), y=perc))+
+ggplot(df_despesas_cresceram, aes(x=reorder(despesas, -perc), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
-  geom_text(aes(label=paste(n, '(', perc, '%)')),nudge_y=3.5)+
+  geom_text(aes(label=paste(n, '(', perc, '%)')),nudge_y=10)+
   labs(x='', y='Number of Respondents')+
+  scale_y_continuous(limits=c(0, 80))+
   theme_minimal()+
   coord_flip()
 

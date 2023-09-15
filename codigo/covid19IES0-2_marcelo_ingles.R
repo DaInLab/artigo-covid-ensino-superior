@@ -423,28 +423,31 @@ ggplot(df_ies_reinicio, aes(x=reorder(ies_reinicio, -perc), y=perc))+
 
 
 # Gráfico 18: Acesso aos serviços de internet
-df_acesso_internet <- dbf.csv  %>% 
+df_acesso_internet <- dbf.csv  
+
+df_acesso_internet$acesso_internet[df_acesso_internet$acesso_internet %in% c("Melhor do que antes", "Muito melhor do que antes")] <- "Improved"
+df_acesso_internet$acesso_internet[df_acesso_internet$acesso_internet %in% c("Muito pior que antes", "Pior que antes")] <- "Worsened"
+df_acesso_internet$acesso_internet[df_acesso_internet$acesso_internet %in% c("O mesmo que antes")] <- "Unchanged"
+df_acesso_internet$acesso_internet[df_acesso_internet$acesso_internet %in% c("N/A ou Não sabe")] <- "Don\'t Know"
+
+df_acesso_internet <- df_acesso_internet%>% 
   count(acesso_internet) %>% 
   mutate(perc=round(n/sum(n)*100,0))
 
-df_acesso_internet[1] <- c('Não Respondeu',
-                        'Melhorou',
-                        'Melhorou Muito',
-                        'Piorou',
-                        'Não Sabe',
-                        'Não Mudou',
-                        'Piorou muito')
+df_acesso_internet
+
+df_acesso_internet$acesso_internet[1] <- 'Non-response'
+
 
 # Melhorou : Melhorou e melhorou muito (improved)
 # Piorou : Piorou e piorou muito (worsened)
 # Nao sabe : (dont know)
 # Nao Mudou : (Unchanged)
 
-df_acesso_internet
 
-ggplot(df_acesso_internet, aes(x=reorder(acesso_internet, -perc), y=perc))+
+ggplot(df_acesso_internet, aes(x=reorder(acesso_internet, -perc), y=n))+
   geom_col(width=.6, fill=alpha('lightblue',3), col='black')+
-  geom_text(aes(label=paste(perc,"%")),nudge_y=6)+
+  geom_text(aes(label=paste(n, '(', perc, '%)')),nudge_y=4)+
   labs(x='', y='Number of Respondents')+
   theme_minimal()
 
